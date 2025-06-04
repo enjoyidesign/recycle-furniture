@@ -545,19 +545,26 @@
 
     <script>
         // 設定常數
-        const SCRIPT_UPDATE_URL = 'https://script.google.com/macros/s/AKfycbzLNGIfLNfMreUjkMmezMJAXEY6-Lvw8ry3x8KXv7B8KgI8yE_LIIvtDvBYxy1yi-FK/exec';
+        // 取得更新用的API網址
+        function getUpdateApiUrl() {
+            return 'https://script.google.com/macros/s/AKfycbzLNGIfLNfMreUjkMmezMJAXEY6-Lvw8ry3x8KXv7B8KgI8yE_LIIvtDvBYxy1yi-FK/exec';
+        }
         
         // 取得URL參數
         const urlParams = new URLSearchParams(window.location.search);
         const token = urlParams.get('token') || 'cHVibGlj'; // 預設為一般民眾
         const userLineId = urlParams.get('lineId') || 'unknown';
 
-        // 取得JSON資料網址
-        function getJsonUrl(token) {
-            if (token === 'Y2hhcml0eQ==') {
-                return 'https://drive.google.com/uc?export=download&id=1q3BmQis_bIO7xeFAB4ektz8UW2xtKgsN';
-            } else {
-                return 'https://drive.google.com/uc?export=download&id=1wPY-GrVSYtcww7vfuai2XuoApm15yz50';
+        // 取得API網址
+        function getApiUrl(token) {
+            // 基礎Apps Script URL
+            const baseUrl = 'https://script.google.com/macros/s/AKfycbzLNGIfLNfMreUjkMmezMJAXEY6-Lvw8ry3x8KXv7B8KgI8yE_LIIvtDvBYxy1yi-FK/exec';
+            
+            // 根據token決定type
+            if (token === 'Y2hhcml0eQ==') { // 'charity' in base64
+                return `${baseUrl}?action=getData&type=charity`;
+            } else { // 一般民眾 (token === 'cHVibGlj' 或其他)
+                return `${baseUrl}?action=getData&type=public`;
             }
         }
 
@@ -587,33 +594,50 @@
             
             try {
                 console.log('開始載入資料，token:', token);
-                const jsonUrl = getJsonUrl(token);
-                console.log('JSON網址:', jsonUrl);
+                const apiUrl = getApiUrl(token);
+                console.log('API網址:', apiUrl);
                 
-                const response = await fetch(jsonUrl);
+                // 使用Apps Script API來避免CORS問題
+                const response = await fetch(apiUrl);
                 console.log('Response status:', response.status);
                 
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
                 
-                const data = await response.json();
-                console.log('載入的資料:', data);
-                console.log('資料筆數:', data.length);
+                const result = await response.json();
+                console.log('API回應:', result);
                 
-                furnitureData = data;
+                if (result.success && result.data) {
+                    furnitureData = result.data;
+                    console.log('載入的資料筆數:', furnitureData.length);
+                } else {
+                    throw new Error(result.message || '無法取得資料');
+                }
+                
                 filteredData = [...furnitureData];
                 renderFurnitureList(filteredData);
                 updateFilterOptions();
                 
             } catch (error) {
                 console.error('載入資料時發生錯誤:', error);
-                document.getElementById('furnitureList').innerHTML = `
-                    <div class="no-results">
-                        載入資料時發生錯誤：${error.message}<br>
-                        <small>請檢查網路連線或稍後再試</small>
-                    </div>
-                `;
+                // 如果API失敗，載入測試資料作為備用
+                console.log('API載入失敗，使用測試資料...');
+                loadTestData();
+                
+                // 顯示API載入失敗的提示
+                setTimeout(() => {
+                    const testNotice = document.querySelector('.test-mode-notice');
+                    if (testNotice) {
+                        testNotice.innerHTML = `
+                            📋 API載入失敗，目前顯示測試資料<br>
+                            <small>錯誤：${error.message}</small>
+                        `;
+                        testNotice.style.background = '#f8d7da';
+                        testNotice.style.borderColor = '#f5c6cb';
+                        testNotice.style.color = '#721c24';
+                    }
+                }, 100);
             }
         }
 
@@ -660,6 +684,26 @@
                     "家具圖片2": "",
                     "家具圖片3": "",
                     "家具圖片4": ""
+                },
+                {
+                    "家具編號": "F003",
+                    "家具名稱": "辦公椅",
+                    "種類": "椅子",
+                    "所在地縣市": "台中市",
+                    "實際地址": "台中市西屯區台灣大道三段99號",
+                    "購買年分": "2021",
+                    "新舊程度": "九成新",
+                    "家具材質": "皮革+金屬",
+                    "家具重量": "15公斤",
+                    "第一領取時間": "2025-06-10",
+                    "第二領取時間": "2025-07-10",
+                    "轉移到倉庫": "",
+                    "倉庫地址": "",
+                    "費用": "2000元",
+                    "家具圖片1": "https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=400",
+                    "家具圖片2": "",
+                    "家具圖片3": "",
+                    "家具圖片4": ""
                 }
             ];
             
@@ -669,9 +713,9 @@
             
             // 顯示測試模式提示
             document.getElementById('furnitureList').insertAdjacentHTML('afterbegin', `
-                <div style="background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; padding: 15px; margin-bottom: 20px; border-radius: 8px; text-align: center;">
-                    📋 本地端測試模式 - 顯示模擬資料<br>
-                    <small>要看到真實資料，請將檔案部署到網路伺服器</small>
+                <div class="test-mode-notice" style="background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; padding: 15px; margin-bottom: 20px; border-radius: 8px; text-align: center;">
+                    📋 目前顯示測試資料<br>
+                    <small>${location.protocol === 'file:' ? '本地端測試模式' : 'API載入中或備用模式'}</small>
                 </div>
             `);
         }
@@ -688,7 +732,7 @@
                 updateBtn.innerHTML = '更新中...';
                 
                 // 呼叫Apps Script觸發更新
-                const response = await fetch(SCRIPT_UPDATE_URL + '?action=update', {
+                const response = await fetch(getUpdateApiUrl() + '?action=update', {
                     method: 'GET',
                     headers: {
                         'Accept': 'application/json',
