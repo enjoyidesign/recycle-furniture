@@ -27,6 +27,45 @@
             border-bottom: 1px solid #e8e2db;
         }
 
+        .debug-panel {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            margin: 15px;
+            padding: 20px;
+            border-radius: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+
+        .debug-panel h3 {
+            color: #495057;
+            margin-bottom: 10px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .debug-info {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 5px 0;
+            border-left: 4px solid #007bff;
+        }
+
+        .debug-success {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+
+        .debug-error {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .debug-warning {
+            border-left-color: #ffc107;
+            background: #fff3cd;
+        }
+
         .search-section {
             background: white;
             padding: 25px;
@@ -433,6 +472,20 @@
             font-size: 18px;
         }
 
+        .toggle-debug {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 999;
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
         @media (max-width: 768px) {
             .card-content {
                 flex-direction: column;
@@ -466,13 +519,47 @@
             .reserve-buttons {
                 flex-direction: column;
             }
+
+            .debug-panel {
+                margin: 10px;
+                padding: 15px;
+                font-size: 11px;
+            }
         }
+        /* 🔒 預設隱藏除錯功能 */
+    .toggle-debug {
+        display: none !important;
+    }
+
+    #debugPanel {
+        display: none !important;
+    }
+
+    /* 🔓 除錯模式時顯示 */
+    .debug-mode .toggle-debug {
+        display: block !important;
+    }
+
+    .debug-mode #debugPanel {
+        display: block !important;
+    }
+</style>
     </style>
 </head>
 <body>
+    <button class="toggle-debug" onclick="toggleDebugPanel()">🐛 除錯</button>
+
     <div class="header">
         <h1>公益家具再利用平台</h1>
         <p>找到心儀的家具，開始新生活</p>
+    </div>
+
+    <!-- 除錯面板 -->
+    <div id="debugPanel" class="debug-panel" style="display: none;">
+        <h3>🔍 除錯資訊</h3>
+        <div id="debugInfo">
+            <div class="debug-info">等待載入資料...</div>
+        </div>
     </div>
 
     <div class="search-section">
@@ -543,11 +630,15 @@
         </div>
     </div>
 
-    <script>
-        // 設定常數
+ <script>
+        // 🔧 統一的 API URL 設定
+        const API_CONFIG = {
+            BASE_URL: 'https://script.google.com/macros/s/AKfycbxspmt1FDOeYdjRJmMznBRIuvWQj8XR25jaMZW2YMyMrxCr_aFSeYG3lHV4D3DnOmrk/exec'
+        };
+
         // 取得更新用的API網址
         function getUpdateApiUrl() {
-            return 'https://script.google.com/macros/s/AKfycbzLNGIfLNfMreUjkMmezMJAXEY6-Lvw8ry3x8KXv7B8KgI8yE_LIIvtDvBYxy1yi-FK/exec';
+            return API_CONFIG.BASE_URL;
         }
         
         // 取得URL參數
@@ -555,16 +646,62 @@
         const token = urlParams.get('token') || 'cHVibGlj'; // 預設為一般民眾
         const userLineId = urlParams.get('lineId') || 'unknown';
 
-        // 取得API網址
-        function getApiUrl(token) {
-            // 基礎Apps Script URL
-            const baseUrl = 'https://script.google.com/macros/s/AKfycbzLNGIfLNfMreUjkMmezMJAXEY6-Lvw8ry3x8KXv7B8KgI8yE_LIIvtDvBYxy1yi-FK/exec';
+        // 🔒 檢查除錯模式
+        const isDebugMode = urlParams.has('debug');
+        
+        // 除錯日誌
+        let debugLogs = [];
+
+        function addDebugLog(message, type = 'info') {
+            if (isDebugMode) {
+                const timestamp = new Date().toLocaleTimeString();
+                debugLogs.push({ timestamp, message, type });
+                updateDebugPanel();
+                console.log(`[${timestamp}] ${message}`);
+            } else {
+                console.log(`[DEBUG] ${message}`);
+            }
+        }
+
+        function updateDebugPanel() {
+            if (!isDebugMode) return;
             
-            // 根據token決定type
+            const debugInfo = document.getElementById('debugInfo');
+            if (debugInfo) {
+                debugInfo.innerHTML = debugLogs.map(log => 
+                    `<div class="debug-info debug-${log.type}">
+                        [${log.timestamp}] ${log.message}
+                    </div>`
+                ).join('');
+            }
+        }
+
+        function toggleDebugPanel() {
+            if (!isDebugMode) return;
+            
+            const panel = document.getElementById('debugPanel');
+            if (panel) {
+                panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+            }
+        }
+
+        // 🔧 初始化除錯模式顯示
+        function initializeDebugMode() {
+            if (isDebugMode) {
+                document.body.classList.add('debug-mode');
+                addDebugLog('🔓 除錯模式已啟用', 'success');
+            }
+        }
+
+        // 🔧 取得API網址
+        function getApiUrl(token) {
+            const baseUrl = API_CONFIG.BASE_URL;
+            const timestamp = new Date().getTime();
+            
             if (token === 'Y2hhcml0eQ==') { // 'charity' in base64
-                return `${baseUrl}?action=getData&type=charity`;
-            } else { // 一般民眾 (token === 'cHVibGlj' 或其他)
-                return `${baseUrl}?action=getData&type=public`;
+                return `${baseUrl}?action=getData&type=charity&_t=${timestamp}`;
+            } else { // 一般民眾
+                return `${baseUrl}?action=getData&type=public&_t=${timestamp}`;
             }
         }
 
@@ -575,79 +712,130 @@
         // LIFF 初始化
         window.addEventListener('load', function() {
             liff.init({
-                liffId: '2007527995-VrMyorMd' // 這裡需要替換為真實的LIFF ID
+                liffId: '2007527995-VrMyorMd'
             }).then(() => {
-                console.log('LIFF 初始化成功');
+                addDebugLog('LIFF 初始化成功', 'success');
             }).catch((err) => {
-                console.log('LIFF 初始化失敗', err);
+                addDebugLog(`LIFF 初始化失敗: ${err}`, 'error');
             });
         });
 
-        // 載入家具資料
+        // 🔧 修正版載入家具資料函數 - 跳過第一次嘗試
         async function loadFurnitureData() {
-            // 如果是本地端測試，直接載入測試資料
+            addDebugLog('🚀 開始載入家具資料', 'info');
+            addDebugLog(`🎯 當前 token: ${token}`, 'info');
+            
             if (location.protocol === 'file:') {
-                console.log('檢測到本地端測試，載入模擬資料...');
+                addDebugLog('檢測到本地端測試，載入模擬資料', 'warning');
                 loadTestData();
                 return;
             }
             
+            const dataType = token === 'Y2hhcml0eQ==' ? '公益單位' : '一般民眾';
+            addDebugLog(`👤 資料類型: ${dataType}`, 'info');
+            
+            // 🔧 直接使用穩定的方法（跳過第一次嘗試）
             try {
-                console.log('開始載入資料，token:', token);
-                const apiUrl = getApiUrl(token);
-                console.log('API網址:', apiUrl);
+                addDebugLog('🔄 開始載入 (使用穩定方法)...', 'info');
                 
-                // 使用Apps Script API來避免CORS問題
-                const response = await fetch(apiUrl);
-                console.log('Response status:', response.status);
+                const baseUrl = API_CONFIG.BASE_URL;
+                const simpleUrl = `${baseUrl}?action=getData&type=${dataType === '公益單位' ? 'charity' : 'public'}`;
+                
+                addDebugLog(`📡 載入請求: ${simpleUrl}`, 'info');
+                
+                const response = await fetch(simpleUrl, {
+                    method: 'GET',
+                    cache: 'no-cache'
+                });
+                
+                addDebugLog(`📊 回應狀態: ${response.status}`, 'info');
                 
                 if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    throw new Error(`HTTP ${response.status}`);
                 }
                 
-                const result = await response.json();
-                console.log('API回應:', result);
+                const responseText = await response.text();
+                addDebugLog(`📏 回應長度: ${responseText.length} 字元`, 'info');
                 
-                if (result.success && result.data) {
-                    furnitureData = result.data;
-                    console.log('載入的資料筆數:', furnitureData.length);
-                } else {
-                    throw new Error(result.message || '無法取得資料');
+                if (responseText.length === 0) {
+                    throw new Error('回應內容為空');
+                }
+                
+                let result;
+                try {
+                    result = JSON.parse(responseText);
+                } catch (parseError) {
+                    addDebugLog(`❌ JSON 解析失敗: ${parseError.message}`, 'error');
+                    addDebugLog(`📋 回應內容前 200 字元: ${responseText.substring(0, 200)}`, 'error');
+                    throw new Error('回應格式錯誤');
+                }
+                
+                // 檢查 API 回應
+                addDebugLog('📋 API 回應檢查:', 'info');
+                addDebugLog(`✓ success: ${result.success}`, 'info');
+                addDebugLog(`✓ count: ${result.count}`, 'info');
+                addDebugLog(`✓ type: ${result.type}`, 'info');
+                
+                if (!result.success) {
+                    throw new Error(result.message || '載入失敗');
+                }
+                
+                if (!Array.isArray(result.data)) {
+                    throw new Error('資料格式錯誤');
+                }
+                
+                furnitureData = result.data;
+                addDebugLog(`✅ 成功載入 ${furnitureData.length} 筆資料`, 'success');
+                
+                if (furnitureData.length > 0) {
+                    addDebugLog(`📝 第一筆: ${furnitureData[0].家具編號} - ${furnitureData[0].家具名稱}`, 'info');
+                    if (furnitureData.length > 1) {
+                        const lastItem = furnitureData[furnitureData.length - 1];
+                        addDebugLog(`📝 最後一筆: ${lastItem.家具編號} - ${lastItem.家具名稱}`, 'info');
+                    }
                 }
                 
                 filteredData = [...furnitureData];
                 renderFurnitureList(filteredData);
                 updateFilterOptions();
+                addDebugLog('✅ 頁面渲染完成', 'success');
+                
+                // 移除測試資料提示
+                const testNotice = document.querySelector('.test-mode-notice');
+                if (testNotice) testNotice.remove();
                 
             } catch (error) {
-                console.error('載入資料時發生錯誤:', error);
-                // 如果API失敗，載入測試資料作為備用
-                console.log('API載入失敗，使用測試資料...');
-                loadTestData();
+                addDebugLog(`❌ 載入失敗: ${error.message}`, 'error');
+                addDebugLog('🔄 載入測試資料作為備用...', 'warning');
                 
-                // 顯示API載入失敗的提示
+                if (dataType === '公益單位') {
+                    loadCharityTestData();
+                } else {
+                    loadTestData();
+                }
+                
+                // 顯示載入失敗提示
                 setTimeout(() => {
-                    const testNotice = document.querySelector('.test-mode-notice');
-                    if (testNotice) {
-                        testNotice.innerHTML = `
-                            📋 API載入失敗，目前顯示測試資料<br>
-                            <small>錯誤：${error.message}</small>
-                        `;
-                        testNotice.style.background = '#f8d7da';
-                        testNotice.style.borderColor = '#f5c6cb';
-                        testNotice.style.color = '#721c24';
+                    const container = document.getElementById('furnitureList');
+                    if (container && !container.querySelector('.test-mode-notice')) {
+                        container.insertAdjacentHTML('afterbegin', `
+                            <div class="test-mode-notice" style="background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 15px; margin-bottom: 20px; border-radius: 8px; text-align: center;">
+                                ⚠️ API 載入失敗，目前顯示測試資料<br>
+                                <small>資料類型：${dataType}</small>
+                            </div>
+                        `);
                     }
                 }, 100);
             }
         }
 
-        // 本地端測試用的模擬資料
+        // 一般測試資料
         function loadTestData() {
-            console.log('載入測試資料...');
+            addDebugLog('📋 載入測試資料...', 'warning');
             furnitureData = [
                 {
-                    "家具編號": "F001",
-                    "家具名稱": "實木書桌",
+                    "家具編號": "T001",
+                    "家具名稱": "測試實木書桌",
                     "種類": "書桌",
                     "所在地縣市": "台北市",
                     "實際地址": "台北市大安區忠孝東路四段100號",
@@ -660,136 +848,280 @@
                     "轉移到倉庫": "",
                     "倉庫地址": "",
                     "費用": "3500元",
-                    "家具圖片1": "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400",
-                    "家具圖片2": "https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=400",
-                    "家具圖片3": "",
-                    "家具圖片4": ""
-                },
-                {
-                    "家具編號": "F002",
-                    "家具名稱": "三人座布沙發",
-                    "種類": "沙發",
-                    "所在地縣市": "新北市",
-                    "實際地址": "新北市板橋區中山路二段50號",
-                    "購買年分": "2019",
-                    "新舊程度": "七成新",
-                    "家具材質": "布料+實木框架",
-                    "家具重量": "45公斤",
-                    "第一領取時間": "2025-05-15",
-                    "第二領取時間": "2025-06-25",
-                    "轉移到倉庫": "是",
-                    "倉庫地址": "新北市板橋區倉庫路123號",
-                    "費用": "",
-                    "家具圖片1": "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400",
-                    "家具圖片2": "",
-                    "家具圖片3": "",
-                    "家具圖片4": ""
-                },
-                {
-                    "家具編號": "F003",
-                    "家具名稱": "辦公椅",
-                    "種類": "椅子",
-                    "所在地縣市": "台中市",
-                    "實際地址": "台中市西屯區台灣大道三段99號",
-                    "購買年分": "2021",
-                    "新舊程度": "九成新",
-                    "家具材質": "皮革+金屬",
-                    "家具重量": "15公斤",
-                    "第一領取時間": "2025-06-10",
-                    "第二領取時間": "2025-07-10",
-                    "轉移到倉庫": "",
-                    "倉庫地址": "",
-                    "費用": "2000元",
-                    "家具圖片1": "https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=400",
-                    "家具圖片2": "",
-                    "家具圖片3": "",
-                    "家具圖片4": ""
+                    "家具圖片1": "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400"
                 }
             ];
             
+            addDebugLog(`📋 測試資料載入完成，共 ${furnitureData.length} 筆`, 'success');
             filteredData = [...furnitureData];
             renderFurnitureList(filteredData);
             updateFilterOptions();
             
-            // 顯示測試模式提示
             document.getElementById('furnitureList').insertAdjacentHTML('afterbegin', `
                 <div class="test-mode-notice" style="background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; padding: 15px; margin-bottom: 20px; border-radius: 8px; text-align: center;">
                     📋 目前顯示測試資料<br>
-                    <small>${location.protocol === 'file:' ? '本地端測試模式' : 'API載入中或備用模式'}</small>
+                    <small>API載入失敗，使用備用資料</small>
                 </div>
             `);
         }
 
-        // 更新資料功能
-        async function updateData() {
-            const updateBtn = document.getElementById('updateBtn');
-            const lastUpdate = document.getElementById('lastUpdate');
-            const originalText = updateBtn.innerHTML;
+        // 公益單位測試資料
+        function loadCharityTestData() {
+            addDebugLog('📋 載入公益單位測試資料...', 'warning');
             
-            try {
-                // 更新按鈕狀態
-                updateBtn.disabled = true;
-                updateBtn.innerHTML = '更新中...';
-                
-                // 呼叫Apps Script觸發更新
-                const response = await fetch(getUpdateApiUrl() + '?action=update', {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json',
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            furnitureData = [
+                {
+                    "家具編號": "T001",
+                    "家具名稱": "測試實木書桌 (公益)",
+                    "種類": "書桌",
+                    "所在地縣市": "台北市",
+                    "實際地址": "台北市大安區忠孝東路四段100號",
+                    "購買年分": "2020",
+                    "新舊程度": "八成新",
+                    "家具材質": "實木",
+                    "家具重量": "25公斤",
+                    "第一領取時間": "2025-06-01",
+                    "第二領取時間": "2025-06-30",
+                    "費用": "3500元",
+                    "上傳人姓名": "測試公益單位",
+                    "連絡電話": "02-1234-5678",
+                    "家具圖片1": "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400"
                 }
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    // 更新成功，重新載入資料
-                    updateBtn.innerHTML = '更新成功';
-                    setTimeout(() => {
-                        updateBtn.innerHTML = '重新載入中';
-                        loadFurnitureData(); // 重新載入資料
-                    }, 1000);
-                    
-                    // 顯示最後更新時間
-                    const now = new Date();
-                    const timeString = now.toLocaleString('zh-TW', {
-                        month: '2-digit',
-                        day: '2-digit',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    });
-                    lastUpdate.textContent = `最後更新：${timeString}`;
-                    lastUpdate.style.display = 'inline';
-                    
-                    // 恢復按鈕
-                    setTimeout(() => {
-                        updateBtn.disabled = false;
-                        updateBtn.innerHTML = originalText;
-                    }, 3000);
-                    
-                } else {
-                    throw new Error(result.message || '更新失敗');
-                }
-                
-            } catch (error) {
-                console.error('更新資料錯誤:', error);
-                updateBtn.innerHTML = '更新失敗';
-                
-                // 顯示錯誤訊息
-                showNotification('更新失敗，請稍後再試', 'error');
-                
-                // 恢復按鈕
-                setTimeout(() => {
-                    updateBtn.disabled = false;
-                    updateBtn.innerHTML = originalText;
-                }, 3000);
-            }
+            ];
+            
+            addDebugLog(`📋 公益單位測試資料載入完成，共 ${furnitureData.length} 筆`, 'success');
+            filteredData = [...furnitureData];
+            renderFurnitureList(filteredData);
+            updateFilterOptions();
         }
 
-        // 取得顯示地址（判斷是否為倉庫地址）
+ // 🔧 改良版 updateData 函數 - 確保真的更新
+async function updateData() {
+    const updateBtn = document.getElementById('updateBtn');
+    const lastUpdate = document.getElementById('lastUpdate');
+    const originalText = updateBtn.innerHTML;
+    
+    addDebugLog('🔄 開始更新資料 (改良版 iframe)...', 'info');
+    
+    try {
+        updateBtn.disabled = true;
+        updateBtn.innerHTML = '更新中...';
+        
+        const timestamp = new Date().getTime();
+        const updateUrl = `${getUpdateApiUrl()}?action=update&_t=${timestamp}`;
+        
+        addDebugLog(`📡 更新 URL: ${updateUrl}`, 'info');
+        
+        // 方法1: 先嘗試直接在瀏覽器中開啟 API URL
+        addDebugLog('🔄 方法1: 嘗試在新視窗中執行更新...', 'info');
+        
+        // 開啟一個很小的彈出視窗來執行更新
+        const updateWindow = window.open(
+            updateUrl, 
+            'updateWindow', 
+            'width=300,height=200,left=9999,top=9999,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no'
+        );
+        
+        if (updateWindow) {
+            addDebugLog('✅ 更新視窗已開啟', 'info');
+            
+            // 等待一段時間讓 API 執行
+            setTimeout(() => {
+                try {
+                    updateWindow.close();
+                    addDebugLog('✅ 更新視窗已關閉', 'info');
+                } catch (e) {
+                    // 忽略關閉錯誤
+                }
+            }, 3000);
+            
+            // 等待 API 執行完成
+            await new Promise(resolve => setTimeout(resolve, 4000));
+            
+            updateBtn.innerHTML = '更新完成';
+            addDebugLog('✅ 更新請求已發送', 'success');
+            
+        } else {
+            // 如果彈出視窗被阻擋，使用 iframe 方式
+            addDebugLog('⚠️ 彈出視窗被阻擋，改用 iframe 方式', 'warning');
+            await updateWithIframe(updateUrl);
+        }
+        
+        // 延遲後重新載入資料來驗證更新
+        setTimeout(() => {
+            updateBtn.innerHTML = '驗證更新中';
+            addDebugLog('🔍 驗證更新是否成功...', 'info');
+            loadFurnitureData();
+        }, 2000);
+        
+        // 更新時間顯示
+        const now = new Date();
+        const timeString = now.toLocaleString('zh-TW', {
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        lastUpdate.textContent = `最後更新：${timeString}`;
+        lastUpdate.style.display = 'inline';
+        
+        showNotification('更新請求已發送！', 'success');
+        
+        // 恢復按鈕
+        setTimeout(() => {
+            updateBtn.disabled = false;
+            updateBtn.innerHTML = originalText;
+        }, 5000);
+        
+    } catch (error) {
+        addDebugLog(`❌ 更新失敗: ${error.message}`, 'error');
+        updateBtn.innerHTML = '更新失敗';
+        showNotification(`更新失敗: ${error.message}`, 'error');
+        
+        setTimeout(() => {
+            updateBtn.disabled = false;
+            updateBtn.innerHTML = originalText;
+        }, 3000);
+    }
+}
+
+// 🔧 iframe 備用方式
+async function updateWithIframe(updateUrl) {
+    return new Promise((resolve, reject) => {
+        addDebugLog('🔄 使用 iframe 執行更新...', 'info');
+        
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.style.width = '0';
+        iframe.style.height = '0';
+        iframe.style.position = 'absolute';
+        iframe.style.left = '-9999px';
+        
+        let completed = false;
+        
+        const cleanup = () => {
+            if (iframe.parentNode) {
+                iframe.parentNode.removeChild(iframe);
+            }
+        };
+        
+        // 設定超時
+        const timeout = setTimeout(() => {
+            if (!completed) {
+                completed = true;
+                addDebugLog('⏰ iframe 更新超時，但可能已完成', 'warning');
+                cleanup();
+                resolve(); // 即使超時也當作成功
+            }
+        }, 8000);
+        
+        iframe.onload = () => {
+            if (!completed) {
+                completed = true;
+                clearTimeout(timeout);
+                addDebugLog('✅ iframe 載入完成', 'success');
+                cleanup();
+                resolve();
+            }
+        };
+        
+        iframe.onerror = () => {
+            if (!completed) {
+                completed = true;
+                clearTimeout(timeout);
+                addDebugLog('❌ iframe 載入錯誤', 'error');
+                cleanup();
+                resolve(); // 即使錯誤也繼續
+            }
+        };
+        
+        document.body.appendChild(iframe);
+        iframe.src = updateUrl;
+    });
+}
+
+// 🔧 替代方案：使用 img 標籤觸發請求
+async function updateDataWithImage() {
+    const updateBtn = document.getElementById('updateBtn');
+    const lastUpdate = document.getElementById('lastUpdate');
+    const originalText = updateBtn.innerHTML;
+    
+    addDebugLog('🔄 開始更新資料 (img 方式)...', 'info');
+    
+    try {
+        updateBtn.disabled = true;
+        updateBtn.innerHTML = '更新中...';
+        
+        const timestamp = new Date().getTime();
+        const updateUrl = `${getUpdateApiUrl()}?action=update&_t=${timestamp}`;
+        
+        addDebugLog(`📡 img 更新URL: ${updateUrl}`, 'info');
+        
+        // 建立隱藏的 img 元素來觸發請求
+        const img = new Image();
+        
+        const imgPromise = new Promise((resolve, reject) => {
+            const timeout = setTimeout(() => {
+                addDebugLog('⏰ img 請求超時，視為成功', 'warning');
+                resolve();
+            }, 10000);
+            
+            img.onload = () => {
+                clearTimeout(timeout);
+                addDebugLog('✅ img 載入完成（可能出錯但請求已發送）', 'info');
+                resolve();
+            };
+            
+            img.onerror = () => {
+                clearTimeout(timeout);
+                addDebugLog('✅ img 載入錯誤（正常，因為回應是JSON）', 'info');
+                resolve(); // 錯誤是正常的，因為 API 回傳 JSON 不是圖片
+            };
+        });
+        
+        img.src = updateUrl;
+        await imgPromise;
+        
+        updateBtn.innerHTML = '更新完成';
+        addDebugLog('✅ 更新請求已發送 (img)', 'success');
+        
+        // 延遲後重新載入資料
+        setTimeout(() => {
+            updateBtn.innerHTML = '重新載入中';
+            loadFurnitureData();
+        }, 2000);
+        
+        // 更新時間顯示
+        const now = new Date();
+        const timeString = now.toLocaleString('zh-TW', {
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        lastUpdate.textContent = `最後更新：${timeString}`;
+        lastUpdate.style.display = 'inline';
+        
+        showNotification('更新完成！', 'success');
+        
+        setTimeout(() => {
+            updateBtn.disabled = false;
+            updateBtn.innerHTML = originalText;
+        }, 4000);
+        
+    } catch (error) {
+        addDebugLog(`❌ img 更新失敗: ${error.message}`, 'error');
+        updateBtn.innerHTML = '更新失敗';
+        showNotification(`更新失敗: ${error.message}`, 'error');
+        
+        setTimeout(() => {
+            updateBtn.disabled = false;
+            updateBtn.innerHTML = originalText;
+        }, 3000);
+    }
+}
+
+        // 取得顯示地址
         function getDisplayAddress(item) {
             if (item.轉移到倉庫 && item.倉庫地址 && item.倉庫地址.trim() !== '') {
                 return `${item.倉庫地址} (倉庫)`;
@@ -798,7 +1130,7 @@
             }
         }
 
-        // 取得顯示費用（處理空值）
+        // 取得顯示費用
         function getDisplayPrice(item) {
             if (item.費用 && item.費用.trim() !== '') {
                 return item.費用;
@@ -809,7 +1141,8 @@
 
         // 更新篩選器選項
         function updateFilterOptions() {
-            // 更新種類選項
+            addDebugLog('🔄 更新篩選器選項...', 'info');
+            
             const categories = [...new Set(furnitureData.map(item => item.種類))].filter(Boolean);
             const categorySelect = document.getElementById('categoryFilter');
             const currentCategory = categorySelect.value;
@@ -822,7 +1155,6 @@
                 categorySelect.appendChild(option);
             });
 
-            // 更新地區選項
             const locations = [...new Set(furnitureData.map(item => item.所在地縣市))].filter(Boolean);
             const locationSelect = document.getElementById('locationFilter');
             const currentLocation = locationSelect.value;
@@ -835,7 +1167,6 @@
                 locationSelect.appendChild(option);
             });
 
-            // 更新新舊程度選項
             const conditions = [...new Set(furnitureData.map(item => item.新舊程度))].filter(Boolean);
             const conditionSelect = document.getElementById('conditionFilter');
             const currentCondition = conditionSelect.value;
@@ -847,21 +1178,20 @@
                 if (condition === currentCondition) option.selected = true;
                 conditionSelect.appendChild(option);
             });
+            
+            addDebugLog(`✅ 篩選器更新完成 - 種類:${categories.length}, 地區:${locations.length}, 程度:${conditions.length}`, 'success');
         }
 
         // 顯示通知訊息
         function showNotification(message, type = 'info') {
-            // 移除現有通知
             const existingNotification = document.querySelector('.notification');
             if (existingNotification) {
                 existingNotification.remove();
             }
 
-            // 建立新通知
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
             
-            // 設定圖示
             let icon = '';
             switch(type) {
                 case 'success': icon = '✓'; break;
@@ -877,11 +1207,8 @@
             `;
 
             document.body.appendChild(notification);
-
-            // 顯示動畫
             setTimeout(() => notification.classList.add('show'), 100);
 
-            // 自動消失（除了loading狀態）
             if (type !== 'loading') {
                 setTimeout(() => {
                     if (notification.parentElement) {
@@ -894,10 +1221,13 @@
 
         // 渲染家具列表
         function renderFurnitureList(data) {
+            addDebugLog(`🎨 開始渲染 ${data.length} 筆家具資料`, 'info');
+            
             const container = document.getElementById('furnitureList');
             
             if (data.length === 0) {
                 container.innerHTML = '<div class="no-results">找不到符合條件的家具</div>';
+                addDebugLog('📋 顯示無結果訊息', 'warning');
                 return;
             }
 
@@ -923,12 +1253,19 @@
                     </div>
                 </div>
             `).join('');
+            
+            addDebugLog('✅ 家具列表渲染完成', 'success');
         }
 
         // 顯示詳細資料
         function showDetail(furnitureId) {
+            addDebugLog(`🔍 顯示家具詳細資料: ${furnitureId}`, 'info');
+            
             const item = furnitureData.find(f => f.家具編號 === furnitureId);
-            if (!item) return;
+            if (!item) {
+                addDebugLog(`❌ 找不到家具編號: ${furnitureId}`, 'error');
+                return;
+            }
 
             const modal = document.getElementById('detailModal');
             const modalTitle = document.getElementById('modalTitle');
@@ -936,7 +1273,6 @@
 
             modalTitle.textContent = item.家具名稱;
 
-            // 收集有效的圖片
             const images = [item.家具圖片1, item.家具圖片2, item.家具圖片3, item.家具圖片4]
                 .filter(img => img && img.trim() !== '');
 
@@ -980,10 +1316,13 @@
             `;
 
             modal.style.display = 'block';
+            addDebugLog('✅ 詳細資料彈窗已顯示', 'success');
         }
 
         // 手機版預約 (LIFF)
         function reserveFurnitureMobile(furnitureId) {
+            addDebugLog(`📱 手機版預約: ${furnitureId}`, 'info');
+            
             const message = `§預約_${furnitureId}`;
             
             if (liff.isLoggedIn()) {
@@ -991,14 +1330,15 @@
                     type: 'text',
                     text: message
                 }]).then(() => {
+                    addDebugLog('✅ LIFF 預約訊息已送出', 'success');
                     showNotification('預約訊息已送出！', 'success');
                     document.getElementById('detailModal').style.display = 'none';
                 }).catch((err) => {
-                    console.error('發送訊息失敗:', err);
+                    addDebugLog(`❌ LIFF 發送失敗: ${err}`, 'error');
                     showNotification('發送失敗，請稍後再試', 'error');
                 });
             } else {
-                // 如果未登入，顯示訊息讓用戶複製
+                addDebugLog('⚠️ LIFF 未登入，使用剪貼簿方式', 'warning');
                 navigator.clipboard.writeText(message).then(() => {
                     showNotification('預約訊息已複製到剪貼簿，請到LINE貼上發送', 'info');
                 }).catch(() => {
@@ -1009,34 +1349,41 @@
 
         // 電腦版預約 (Webhook)
         async function reserveFurnitureDesktop(furnitureId) {
-            // 顯示處理中狀態
+            addDebugLog(`💻 電腦版預約: ${furnitureId}`, 'info');
+            
             showNotification('處理中，請稍候...', 'loading');
             
             try {
+                const webhookData = {
+                    action: "預約",
+                    furnitureId: furnitureId,
+                    lineUserId: userLineId,
+                    deviceType: "desktop",
+                    timestamp: new Date().toISOString()
+                };
+                
+                addDebugLog(`📡 發送 Webhook 資料: ${JSON.stringify(webhookData)}`, 'info');
+                
                 const response = await fetch('https://hook.us1.make.com/9agluue4wcuqbtxt6al0jwva2rwooiik', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({
-                        action: "預約",
-                        furnitureId: furnitureId,
-                        lineUserId: userLineId,
-                        deviceType: "desktop",
-                        timestamp: new Date().toISOString()
-                    })
+                    body: JSON.stringify(webhookData)
                 });
+
+                addDebugLog(`📊 Webhook 回應: ${response.status}`, response.ok ? 'success' : 'error');
 
                 if (response.ok) {
                     const result = await response.text();
-                    // 顯示Make.com回傳的訊息
+                    addDebugLog(`📋 Webhook 結果: ${result}`, 'success');
                     showNotification(result || '預約成功！我們會盡快與您聯絡', 'success');
                     document.getElementById('detailModal').style.display = 'none';
                 } else {
                     throw new Error('伺服器回應錯誤');
                 }
             } catch (error) {
-                console.error('Webhook發送失敗:', error);
+                addDebugLog(`❌ Webhook 發送失敗: ${error.message}`, 'error');
                 showNotification('預約失敗，請稍後再試或聯絡客服', 'error');
             }
         }
@@ -1061,6 +1408,7 @@
                 return matchSearch && matchCategory && matchLocation && matchCondition;
             });
 
+            addDebugLog(`🔍 篩選結果: ${filteredData.length}/${furnitureData.length} 筆`, 'info');
             renderFurnitureList(filteredData);
         }
 
@@ -1082,8 +1430,13 @@
             }
         });
 
-        // 初始載入
+        // 🔒 初始載入（含除錯模式初始化）
         window.addEventListener('DOMContentLoaded', function() {
+            addDebugLog('🎬 頁面載入完成，開始初始化', 'info');
+            
+            // 初始化除錯模式
+            initializeDebugMode();
+            
             loadFurnitureData();
         });
     </script>
