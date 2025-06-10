@@ -758,6 +758,9 @@
             addDebugLog('🚀 開始載入家具資料', 'info');
             addDebugLog(`🎯 當前 token: ${token}`, 'info');
             
+            // 顯示載入中動畫
+            showLoadingState();
+            
             if (location.protocol === 'file:') {
                 addDebugLog('檢測到本地端測試，載入模擬資料', 'warning');
                 loadTestData();
@@ -860,6 +863,18 @@
                     }
                 }, 100);
             }
+        }
+
+        // 顯示載入中狀態
+        function showLoadingState() {
+            const container = document.getElementById('furnitureList');
+            container.innerHTML = `
+                <div class="loading-container">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">載入家具資料中...</div>
+                    <div class="loading-subtext">請稍候片刻</div>
+                </div>
+            `;
         }
 
         // 一般測試資料
