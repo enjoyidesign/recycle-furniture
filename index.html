@@ -214,6 +214,24 @@
             color: #8b7355;
         }
 
+        .quantity-badge {
+            background: linear-gradient(135deg, #d4a574 0%, #c89666 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-left: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .quantity-badge::before {
+            content: "📦";
+            font-size: 11px;
+        }
+
         .detail-btn {
             background: linear-gradient(135deg, #d4a574 0%, #c89666 100%);
             color: white;
@@ -344,6 +362,23 @@
             font-weight: 400;
         }
 
+        .detail-quantity-badge {
+            background: linear-gradient(135deg, #d4a574 0%, #c89666 100%);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .detail-quantity-badge::before {
+            content: "📦";
+            font-size: 12px;
+        }
+
         .image-gallery {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -353,7 +388,7 @@
 
         .gallery-image {
             width: 100%;
-            height: 120px; /* 🔧 固定高度，約3:2比例 */
+            height: 120px;
             object-fit: cover;
             border-radius: 12px;
             cursor: pointer;
@@ -366,62 +401,250 @@
             box-shadow: 0 8px 25px rgba(139, 115, 85, 0.15);
         }
 
-        /* 🔧 針對不同圖片數量優化顯示 */
         .image-gallery:has(.gallery-image:nth-child(1):nth-last-child(1)) {
-            /* 只有1張圖片時 - 置中顯示，限制最大寬度 */
             grid-template-columns: 1fr;
             max-width: 300px;
             margin: 20px auto;
         }
 
         .image-gallery:has(.gallery-image:nth-child(1):nth-last-child(1)) .gallery-image {
-            height: 200px; /* 單張圖片時稍微高一點 */
+            height: 200px;
         }
 
         .image-gallery:has(.gallery-image:nth-child(2):nth-last-child(1)) {
-            /* 有2張圖片時 - 並排顯示 */
             grid-template-columns: 1fr 1fr;
         }
 
-        /* 雙按鈕區域 */
-        .reserve-buttons {
-            display: flex;
-            gap: 12px;
-            margin-top: 20px;
+        /* 改良的預約按鈕區域 */
+        .reserve-section {
+            margin-top: 25px;
+            background: #f8f6f3;
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid #e8e2db;
         }
 
-        .reserve-btn {
-            flex: 1;
-            padding: 16px 24px;
+        .reserve-section h4 {
+            color: #8b7355;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: 600;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .main-reserve-btn {
+            width: 100%;
+            padding: 18px 24px;
+            background: linear-gradient(135deg, #d4a574 0%, #c89666 100%);
+            color: white;
             border: none;
             border-radius: 12px;
-            font-size: 16px;
-            font-weight: 500;
+            font-size: 18px;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
         }
 
-        .mobile-btn {
+        .main-reserve-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 165, 116, 0.3);
+            background: linear-gradient(135deg, #c89666 0%, #b8855a 100%);
+        }
+
+        /* 數量選擇彈窗樣式 */
+        .quantity-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .quantity-modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 0;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 450px;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 20px 60px rgba(139, 115, 85, 0.2);
+        }
+
+        .quantity-modal-header {
+            background: linear-gradient(135deg, #f8f4f0 0%, #ede7e0 100%);
+            color: #8b7355;
+            padding: 25px;
+            border-radius: 20px 20px 0 0;
+            text-align: center;
+            border-bottom: 1px solid #e8e2db;
+        }
+
+        .quantity-modal-header h3 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .quantity-modal-body {
+            padding: 30px 25px;
+        }
+
+        .quantity-info {
+            background: #f8f6f3;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border-left: 4px solid #d4a574;
+            text-align: center;
+        }
+
+        .quantity-info-text {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .available-quantity {
+            font-size: 16px;
+            font-weight: 600;
+            color: #8b7355;
+        }
+
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .quantity-btn {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #e8e2db;
+            background: white;
+            border-radius: 12px;
+            font-size: 24px;
+            font-weight: 600;
+            color: #8b7355;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quantity-btn:hover:not(:disabled) {
+            border-color: #d4a574;
+            background: #f8f6f3;
+            transform: translateY(-1px);
+        }
+
+        .quantity-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .quantity-input {
+            width: 80px;
+            height: 50px;
+            border: 2px solid #e8e2db;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c2c2c;
+            background: white;
+        }
+
+        .quantity-input:focus {
+            outline: none;
+            border-color: #d4a574;
+            box-shadow: 0 0 0 3px rgba(212, 165, 116, 0.1);
+        }
+
+        /* 新的雙重預約按鈕樣式 */
+        .dual-reserve-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .reserve-method-btn {
+            flex: 1;
+            padding: 16px 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .mobile-reserve-btn {
             background: linear-gradient(135deg, #a8c8a1 0%, #9bb894 100%);
             color: white;
         }
 
-        .mobile-btn:hover {
+        .mobile-reserve-btn:hover {
             transform: translateY(-1px);
             box-shadow: 0 8px 25px rgba(168, 200, 161, 0.3);
             background: linear-gradient(135deg, #9bb894 0%, #8ca885 100%);
         }
 
-        .desktop-btn {
+        .desktop-reserve-btn {
             background: linear-gradient(135deg, #7db9e8 0%, #6ba6d3 100%);
             color: white;
         }
 
-        .desktop-btn:hover {
+        .desktop-reserve-btn:hover {
             transform: translateY(-1px);
             box-shadow: 0 8px 25px rgba(125, 185, 232, 0.3);
             background: linear-gradient(135deg, #6ba6d3 0%, #5a95be 100%);
+        }
+
+        .quantity-modal-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .quantity-cancel-btn {
+            flex: 1;
+            padding: 14px 20px;
+            background: #f5f5f5;
+            color: #666;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quantity-cancel-btn:hover {
+            background: #e8e8e8;
+            border-color: #bbb;
         }
 
         /* 通知訊息樣式 */
@@ -566,7 +789,7 @@
                 min-width: auto;
             }
 
-            .reserve-buttons {
+            .dual-reserve-buttons {
                 flex-direction: column;
             }
 
@@ -575,25 +798,46 @@
                 padding: 15px;
                 font-size: 11px;
             }
+
+            .quantity-modal-content {
+                margin: 15% auto;
+                width: 95%;
+            }
+            
+            .quantity-selector {
+                gap: 10px;
+            }
+            
+            .quantity-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 20px;
+            }
+            
+            .quantity-input {
+                width: 70px;
+                height: 45px;
+                font-size: 18px;
+            }
         }
-        /* 🔒 預設隱藏除錯功能 */
-    .toggle-debug {
-        display: none !important;
-    }
 
-    #debugPanel {
-        display: none !important;
-    }
+        /* 預設隱藏除錯功能 */
+        .toggle-debug {
+            display: none !important;
+        }
 
-    /* 🔓 除錯模式時顯示 */
-    .debug-mode .toggle-debug {
-        display: block !important;
-    }
+        #debugPanel {
+            display: none !important;
+        }
 
-    .debug-mode #debugPanel {
-        display: block !important;
-    }
-</style>
+        /* 除錯模式時顯示 */
+        .debug-mode .toggle-debug {
+            display: block !important;
+        }
+
+        .debug-mode #debugPanel {
+            display: block !important;
+        }
     </style>
 </head>
 <body>
@@ -680,11 +924,53 @@
         </div>
     </div>
 
- <script>
-        // 🔧 統一的 API URL 設定
+    <!-- 數量選擇彈窗 -->
+    <div id="quantityModal" class="quantity-modal">
+        <div class="quantity-modal-content">
+            <div class="quantity-modal-header">
+                <h3>選擇預約數量</h3>
+            </div>
+            <div class="quantity-modal-body">
+                <div class="quantity-info">
+                    <div class="quantity-info-text">此家具目前可預約數量</div>
+                    <div class="available-quantity" id="availableQuantityText">-- 個</div>
+                </div>
+                
+                <div style="background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; padding: 12px 15px; border-radius: 8px; font-size: 13px; line-height: 1.4; margin-bottom: 20px;">
+                    💡 <strong>重要提醒：</strong>此數量為預約數量，實際可領取數量需與家具提供者聯絡確認後方能確定
+                </div>
+                
+                <div class="quantity-selector">
+                    <button class="quantity-btn" id="quantityMinus" onclick="adjustQuantity(-1)">−</button>
+                    <input type="number" class="quantity-input" id="quantityInput" value="1" min="1" max="1" readonly>
+                    <button class="quantity-btn" id="quantityPlus" onclick="adjustQuantity(1)">+</button>
+                </div>
+                
+                <!-- 新的雙重預約按鈕 -->
+                <div class="dual-reserve-buttons">
+                    <button class="reserve-method-btn mobile-reserve-btn" onclick="confirmQuantityReservation('mobile')">
+                        📱 手機版預約
+                    </button>
+                    <button class="reserve-method-btn desktop-reserve-btn" onclick="confirmQuantityReservation('desktop')">
+                        💻 電腦版預約
+                    </button>
+                </div>
+                
+                <div class="quantity-modal-buttons">
+                    <button class="quantity-cancel-btn" onclick="cancelQuantityReservation()">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 統一的 API URL 設定
         const API_CONFIG = {
             BASE_URL: 'https://script.google.com/macros/s/AKfycbxspmt1FDOeYdjRJmMznBRIuvWQj8XR25jaMZW2YMyMrxCr_aFSeYG3lHV4D3DnOmrk/exec'
         };
+
+        // 當前預約相關的全域變數
+        let currentReservationItem = null;
 
         // 取得更新用的API網址
         function getUpdateApiUrl() {
@@ -693,10 +979,10 @@
         
         // 取得URL參數
         const urlParams = new URLSearchParams(window.location.search);
-        const token = urlParams.get('token') || 'cHVibGlj'; // 預設為一般民眾
+        const token = urlParams.get('token') || 'cHVibGlj';
         const userLineId = urlParams.get('lineId') || 'unknown';
 
-        // 🔒 檢查除錯模式
+        // 檢查除錯模式
         const isDebugMode = urlParams.has('debug');
         
         // 除錯日誌
@@ -735,47 +1021,328 @@
             }
         }
 
-        // 🔧 初始化除錯模式顯示
+        // 🔧 強化除錯模式初始化
         function initializeDebugMode() {
             if (isDebugMode) {
                 document.body.classList.add('debug-mode');
                 addDebugLog('🔓 除錯模式已啟用', 'success');
+                
+                // 🔧 立即創建除錯按鈕
+                setTimeout(() => {
+                    createDebugButtons();
+                }, 100);
             }
         }
 
-        // 🔧 取得API網址
+        // 💡 創建除錯按鈕的函數
+        function createDebugButtons() {
+            addDebugLog('🔧 創建除錯按鈕...', 'info');
+            
+            // 移除舊的按鈕（如果存在）
+            const existingButtons = document.querySelectorAll('.debug-button');
+            existingButtons.forEach(btn => btn.remove());
+            
+            // 按鈕配置
+            const buttonConfigs = [
+                { text: '🐛 除錯', color: '#007bff', left: '20px', action: toggleDebugPanel },
+                { text: '🧪 測試 LIFF', color: '#28a745', left: '110px', action: () => executeReservationMobile('TEST001', 1) },
+                { text: '🔄 重新初始化', color: '#ffc107', left: '210px', action: forceReinitializeLiff },
+                { text: '🔍 檢查狀態', color: '#17a2b8', left: '320px', action: checkLiffStatus }
+            ];
+            
+            buttonConfigs.forEach((config, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'debug-button';
+                btn.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    left: ${config.left};
+                    z-index: 10000;
+                    background: ${config.color};
+                    color: white;
+                    border: none;
+                    padding: 8px 12px;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    font-size: 11px;
+                    font-weight: 500;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                    display: block !important;
+                    visibility: visible !important;
+                `;
+                btn.textContent = config.text;
+                btn.onclick = config.action;
+                document.body.appendChild(btn);
+                
+                addDebugLog(`✅ 創建按鈕: ${config.text}`, 'success');
+            });
+            
+            addDebugLog('🎉 所有除錯按鈕創建完成', 'success');
+        }
+
+        // 💡 改良版 LIFF 狀態檢查函數
+        function checkLiffStatus() {
+            addDebugLog('🔍 === LIFF 狀態檢查 ===', 'info');
+            
+            // 基本檢查
+            addDebugLog(`📱 User Agent: ${navigator.userAgent}`, 'info');
+            addDebugLog(`🌐 Location: ${window.location.href}`, 'info');
+            addDebugLog(`⏰ 當前時間: ${new Date().toLocaleString()}`, 'info');
+            
+            // LIFF SDK 檢查
+            addDebugLog(`🔧 typeof liff: ${typeof liff}`, 'info');
+            addDebugLog(`🔧 liffInitialized: ${liffInitialized}`, 'info');
+            addDebugLog(`🔧 liffReady: ${liffReady}`, 'info');
+            
+            if (typeof liff !== 'undefined') {
+                try {
+                    const isInClient = liff.isInClient();
+                    const isLoggedIn = liff.isLoggedIn();
+                    
+                    addDebugLog(`✅ liff.isInClient(): ${isInClient}`, isInClient ? 'success' : 'error');
+                    addDebugLog(`✅ liff.isLoggedIn(): ${isLoggedIn}`, isLoggedIn ? 'success' : 'error');
+                    addDebugLog(`✅ liff.getOS(): ${liff.getOS()}`, 'info');
+                    addDebugLog(`✅ liff.getVersion(): ${liff.getVersion()}`, 'info');
+                    addDebugLog(`✅ liff.getLanguage(): ${liff.getLanguage()}`, 'info');
+                    
+                    if (isInClient) {
+                        try {
+                            const context = liff.getContext();
+                            addDebugLog(`✅ Context Type: ${context?.type}`, 'info');
+                            addDebugLog(`✅ Context ViewType: ${context?.viewType}`, 'info');
+                            addDebugLog(`✅ Context UserId: ${context?.userId ? '已設定' : '未設定'}`, context?.userId ? 'success' : 'warning');
+                        } catch (contextError) {
+                            addDebugLog(`❌ 取得 Context 失敗: ${contextError.message}`, 'error');
+                        }
+                        
+                        if (isLoggedIn) {
+                            try {
+                                liff.getProfile().then(profile => {
+                                    addDebugLog(`👤 用戶名稱: ${profile.displayName}`, 'success');
+                                    addDebugLog(`👤 用戶ID: ${profile.userId}`, 'success');
+                                }).catch(profileError => {
+                                    addDebugLog(`❌ 取得用戶資訊失敗: ${profileError.message}`, 'error');
+                                });
+                            } catch (profileError) {
+                                addDebugLog(`❌ 取得用戶資訊錯誤: ${profileError.message}`, 'error');
+                            }
+                        }
+                    }
+                    
+                    // 總結狀態
+                    if (isInClient && isLoggedIn) {
+                        addDebugLog('🎉 LIFF 狀態完全正常，可以發送訊息！', 'success');
+                        showNotification('✅ LIFF 狀態正常，可以使用手機版預約', 'success');
+                    } else if (isInClient && !isLoggedIn) {
+                        addDebugLog('⚠️ 在 LINE 客戶端但未登入', 'warning');
+                        showNotification('⚠️ 在 LINE 中但未登入，請嘗試重新初始化', 'warning');
+                    } else if (!isInClient) {
+                        addDebugLog('❌ 不在 LINE 客戶端中', 'error');
+                        showNotification('❌ 不在 LINE 客戶端，請在 LINE 中開啟', 'error');
+                    }
+                    
+                } catch (error) {
+                    addDebugLog(`❌ LIFF 狀態檢查錯誤: ${error.message}`, 'error');
+                    showNotification('❌ LIFF 檢查失敗', 'error');
+                }
+            } else {
+                addDebugLog('❌ LIFF SDK 未載入', 'error');
+                showNotification('❌ LIFF SDK 未載入', 'error');
+            }
+            
+            addDebugLog('🔍 === 狀態檢查完成 ===', 'info');
+        }
+
+        // 💡 強化版強制重新初始化函數
+        async function forceReinitializeLiff() {
+            addDebugLog('🔄 === 開始強制重新初始化 LIFF ===', 'info');
+            
+            showNotification('🔄 正在重新初始化 LIFF...', 'loading');
+            
+            try {
+                // 重置狀態
+                liffInitialized = false;
+                liffReady = false;
+                addDebugLog('✅ 重置 LIFF 狀態變數', 'success');
+                
+                // 等待一下確保重置完成
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // 重新初始化
+                await initializeLiff();
+                
+                // 檢查結果
+                if (typeof liff !== 'undefined' && liff.isInClient() && liff.isLoggedIn()) {
+                    addDebugLog('🎉 重新初始化成功！', 'success');
+                    showNotification('✅ LIFF 重新初始化成功！', 'success');
+                    
+                    // 自動檢查狀態
+                    setTimeout(checkLiffStatus, 1000);
+                    
+                    return true;
+                } else {
+                    addDebugLog('❌ 重新初始化後狀態仍不正常', 'error');
+                    showNotification('❌ 重新初始化失敗，狀態仍異常', 'error');
+                    return false;
+                }
+                
+            } catch (error) {
+                addDebugLog(`❌ 重新初始化過程發生錯誤: ${error.message}`, 'error');
+                showNotification(`❌ 重新初始化失敗: ${error.message}`, 'error');
+                return false;
+            }
+        }
+
+        // 取得API網址
         function getApiUrl(token) {
             const baseUrl = API_CONFIG.BASE_URL;
             const timestamp = new Date().getTime();
             
-            if (token === 'Y2hhcml0eQ==') { // 'charity' in base64
+            if (token === 'Y2hhcml0eQ==') {
                 return `${baseUrl}?action=getData&type=charity&_t=${timestamp}`;
-            } else { // 一般民眾
+            } else {
                 return `${baseUrl}?action=getData&type=public&_t=${timestamp}`;
             }
+        }
+
+        // 取得數量顯示文字
+        function getQuantityDisplay(item) {
+            if (isDebugMode) {
+                console.log('數量檢查 - 項目:', item);
+                console.log('數量檢查 - 所有欄位:', Object.keys(item));
+                console.log('數量檢查 - 家具數量欄位值:', item.家具數量);
+                console.log('數量檢查 - 家具數量類型:', typeof item.家具數量);
+            }
+            
+            const quantity = item.家具數量 || item.數量 || item.quantity || item.Quantity;
+            
+            if (quantity != null && quantity !== '' && quantity !== '0') {
+                const parsed = parseInt(quantity);
+                if (isDebugMode) {
+                    console.log('數量檢查 - 解析後:', parsed);
+                }
+                return parsed || 1;
+            }
+            
+            if (isDebugMode) {
+                console.log('數量檢查 - 使用預設值: 1');
+            }
+            return 1;
         }
 
         // 家具資料
         let furnitureData = [];
         let filteredData = [];
 
-        // LIFF 初始化
-        window.addEventListener('load', function() {
-            liff.init({
-                liffId: '2007527995-VrMyorMd'
-            }).then(() => {
-                addDebugLog('LIFF 初始化成功', 'success');
-            }).catch((err) => {
-                addDebugLog(`LIFF 初始化失敗: ${err}`, 'error');
+        // 🔧 改良版 LIFF 初始化
+        let liffInitialized = false;
+        let liffReady = false;
+
+        // 等待 LIFF SDK 載入
+        function waitForLiff() {
+            return new Promise((resolve, reject) => {
+                let attempts = 0;
+                const maxAttempts = 50; // 5秒內嘗試
+                
+                const checkLiff = () => {
+                    attempts++;
+                    addDebugLog(`🔍 檢查 LIFF SDK... 嘗試 ${attempts}/${maxAttempts}`, 'info');
+                    
+                    if (typeof liff !== 'undefined') {
+                        addDebugLog('✅ LIFF SDK 已載入', 'success');
+                        resolve();
+                    } else if (attempts >= maxAttempts) {
+                        addDebugLog('❌ LIFF SDK 載入超時', 'error');
+                        reject(new Error('LIFF SDK 載入超時'));
+                    } else {
+                        setTimeout(checkLiff, 100);
+                    }
+                };
+                
+                checkLiff();
             });
+        }
+
+        // LIFF 初始化函數
+        async function initializeLiff() {
+            try {
+                addDebugLog('🎬 開始初始化 LIFF...', 'info');
+                
+                // 等待 LIFF SDK 載入
+                await waitForLiff();
+                
+                // 初始化 LIFF
+                await liff.init({
+                    liffId: '2007527995-VrMyorMd'
+                });
+                
+                liffInitialized = true;
+                addDebugLog('✅ LIFF 初始化成功', 'success');
+                
+                // 🔧 詳細的環境檢查
+                addDebugLog(`🔍 LIFF 環境詳細資訊:`, 'info');
+                addDebugLog(`   - LIFF Version: ${liff.getVersion()}`, 'info');
+                addDebugLog(`   - OS: ${liff.getOS()}`, 'info');
+                addDebugLog(`   - Language: ${liff.getLanguage()}`, 'info');
+                addDebugLog(`   - isInClient: ${liff.isInClient()}`, 'info');
+                addDebugLog(`   - isLoggedIn: ${liff.isLoggedIn()}`, 'info');
+                
+                // 🔧 檢查 LINE 客戶端類型
+                if (liff.isInClient()) {
+                    const context = liff.getContext();
+                    addDebugLog(`   - Client Type: ${context?.type}`, 'info');
+                    addDebugLog(`   - User ID: ${context?.userId ? '已取得' : '未取得'}`, 'info');
+                }
+                
+                // 🔧 登入狀態處理
+                if (liff.isInClient()) {
+                    if (!liff.isLoggedIn()) {
+                        addDebugLog('⚠️ 在 LINE 客戶端但未登入，嘗試登入...', 'warning');
+                        try {
+                            await liff.login();
+                            addDebugLog('✅ LIFF 登入成功', 'success');
+                        } catch (loginError) {
+                            addDebugLog(`❌ LIFF 登入失敗: ${loginError.message}`, 'error');
+                        }
+                    } else {
+                        addDebugLog('✅ 已在 LINE 客戶端且已登入', 'success');
+                    }
+                    
+                    // 🔧 取得用戶資訊
+                    try {
+                        const profile = await liff.getProfile();
+                        addDebugLog(`👤 用戶資訊: ${profile.displayName}`, 'info');
+                    } catch (profileError) {
+                        addDebugLog(`⚠️ 無法取得用戶資訊: ${profileError.message}`, 'warning');
+                    }
+                } else {
+                    addDebugLog('⚠️ 不在 LINE 客戶端中', 'warning');
+                }
+                
+                liffReady = true;
+                addDebugLog('🎉 LIFF 完全準備就緒', 'success');
+                
+            } catch (error) {
+                addDebugLog(`❌ LIFF 初始化失敗: ${error.message}`, 'error');
+                addDebugLog(`❌ 錯誤詳細: ${JSON.stringify(error)}`, 'error');
+                liffInitialized = false;
+                liffReady = false;
+            }
+        }
+
+        // 🔧 頁面載入時初始化
+        window.addEventListener('load', function() {
+            // 延遲一點時間確保所有資源載入完成
+            setTimeout(() => {
+                initializeLiff();
+            }, 500);
         });
 
-        // 🔧 修正版載入家具資料函數 - 跳過第一次嘗試
+        // 載入家具資料函數
         async function loadFurnitureData() {
             addDebugLog('🚀 開始載入家具資料', 'info');
             addDebugLog(`🎯 當前 token: ${token}`, 'info');
             
-            // 顯示載入中動畫
             showLoadingState();
             
             if (location.protocol === 'file:') {
@@ -787,7 +1354,6 @@
             const dataType = token === 'Y2hhcml0eQ==' ? '公益單位' : '一般民眾';
             addDebugLog(`👤 資料類型: ${dataType}`, 'info');
             
-            // 🔧 直接使用穩定的方法（跳過第一次嘗試）
             try {
                 addDebugLog('🔄 開始載入 (使用穩定方法)...', 'info');
                 
@@ -823,7 +1389,6 @@
                     throw new Error('回應格式錯誤');
                 }
                 
-                // 檢查 API 回應
                 addDebugLog('📋 API 回應檢查:', 'info');
                 addDebugLog(`✓ success: ${result.success}`, 'info');
                 addDebugLog(`✓ count: ${result.count}`, 'info');
@@ -853,7 +1418,6 @@
                 updateFilterOptions();
                 addDebugLog('✅ 頁面渲染完成', 'success');
                 
-                // 移除測試資料提示
                 const testNotice = document.querySelector('.test-mode-notice');
                 if (testNotice) testNotice.remove();
                 
@@ -867,7 +1431,6 @@
                     loadTestData();
                 }
                 
-                // 顯示載入失敗提示
                 setTimeout(() => {
                     const container = document.getElementById('furnitureList');
                     if (container && !container.querySelector('.test-mode-notice')) {
@@ -913,6 +1476,7 @@
                     "轉移到倉庫": "",
                     "倉庫地址": "",
                     "費用": "3500元",
+                    "家具數量": "3",
                     "家具圖片1": "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400"
                 }
             ];
@@ -948,6 +1512,7 @@
                     "第一領取時間": "2025-06-01",
                     "第二領取時間": "2025-06-30",
                     "費用": "3500元",
+                    "家具數量": "5",
                     "上傳人姓名": "測試公益單位",
                     "連絡電話": "02-1234-5678",
                     "家具圖片1": "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400"
@@ -960,263 +1525,263 @@
             updateFilterOptions();
         }
 
- // 🔧 改良版 updateData 函數 - 針對行動裝置優化
-async function updateData() {
-    const updateBtn = document.getElementById('updateBtn');
-    const lastUpdate = document.getElementById('lastUpdate');
-    const originalText = updateBtn.innerHTML;
-    
-    addDebugLog('🔄 開始更新資料...', 'info');
-    
-    try {
-        updateBtn.disabled = true;
-        updateBtn.innerHTML = '更新中...';
-        
-        const timestamp = new Date().getTime();
-        const updateUrl = `${getUpdateApiUrl()}?action=update&_t=${timestamp}`;
-        
-        addDebugLog(`📡 更新 URL: ${updateUrl}`, 'info');
-        
-        // 🔧 檢測是否在 LINE 或行動裝置中
-        const isLineApp = navigator.userAgent.includes('Line/');
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        const isInApp = isLineApp || window.liff;
-        
-        addDebugLog(`📱 裝置檢測: LINE=${isLineApp}, Mobile=${isMobile}, InApp=${isInApp}`, 'info');
-        
-        if (isInApp || isMobile) {
-            // 🔧 行動裝置或 APP 內：使用 iframe 方式，避免跳轉
-            addDebugLog('📱 使用行動裝置友善的更新方式...', 'info');
-            await updateWithHiddenIframe(updateUrl);
-        } else {
-            // 🔧 桌面裝置：使用原本的彈出視窗方式
-            addDebugLog('💻 使用桌面版更新方式...', 'info');
-            const updateWindow = window.open(
-                updateUrl, 
-                'updateWindow', 
-                'width=300,height=200,left=9999,top=9999,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no'
-            );
+        // 💡 新增：顯示數量選擇彈窗
+        function showQuantityModal(furnitureId) {
+            addDebugLog(`📊 顯示數量選擇彈窗: ${furnitureId}`, 'info');
             
-            if (updateWindow) {
-                setTimeout(() => {
-                    try {
-                        updateWindow.close();
-                    } catch (e) {
-                        // 忽略關閉錯誤
-                    }
-                }, 3000);
-                await new Promise(resolve => setTimeout(resolve, 4000));
+            const item = furnitureData.find(f => f.家具編號 === furnitureId);
+            if (!item) {
+                addDebugLog(`❌ 找不到家具編號: ${furnitureId}`, 'error');
+                showNotification('找不到該家具資料', 'error');
+                return;
+            }
+
+            currentReservationItem = item;
+            addDebugLog(`✅ 設定當前預約項目: ${item.家具名稱}`, 'success');
+
+            const availableQuantity = getQuantityDisplay(item);
+            addDebugLog(`📦 可用數量: ${availableQuantity}`, 'info');
+
+            document.getElementById('availableQuantityText').textContent = `${availableQuantity} 個`;
+            
+            const quantityInput = document.getElementById('quantityInput');
+            quantityInput.value = 1;
+            quantityInput.max = availableQuantity;
+            
+            updateQuantityButtons();
+            
+            document.getElementById('quantityModal').style.display = 'block';
+            addDebugLog('✅ 數量選擇彈窗已顯示', 'success');
+        }
+
+        // 取消預約函數
+        function cancelQuantityReservation() {
+            addDebugLog('🚫 用戶取消預約', 'info');
+            closeQuantityModal();
+        }
+
+        function closeQuantityModal() {
+            addDebugLog('❌ 數量選擇彈窗已關閉', 'info');
+            document.getElementById('quantityModal').style.display = 'none';
+            currentReservationItem = null;
+        }
+
+        function adjustQuantity(change) {
+            const quantityInput = document.getElementById('quantityInput');
+            const currentValue = parseInt(quantityInput.value) || 1;
+            const maxValue = parseInt(quantityInput.max) || 1;
+            
+            const newValue = Math.max(1, Math.min(maxValue, currentValue + change));
+            quantityInput.value = newValue;
+            
+            updateQuantityButtons();
+            addDebugLog(`🔢 數量調整: ${currentValue} → ${newValue}`, 'info');
+        }
+
+        function updateQuantityButtons() {
+            const quantityInput = document.getElementById('quantityInput');
+            const currentValue = parseInt(quantityInput.value) || 1;
+            const maxValue = parseInt(quantityInput.max) || 1;
+            
+            const minusBtn = document.getElementById('quantityMinus');
+            minusBtn.disabled = currentValue <= 1;
+            
+            const plusBtn = document.getElementById('quantityPlus');
+            plusBtn.disabled = currentValue >= maxValue;
+        }
+
+        // 💡 改良版：確認預約（支持雙重選擇）
+        function confirmQuantityReservation(reservationType) {
+            addDebugLog(`🎯 用戶選擇 ${reservationType} 預約`, 'info');
+            
+            if (!currentReservationItem) {
+                addDebugLog('❌ 缺少預約資料', 'error');
+                showNotification('預約資料不完整', 'error');
+                return;
+            }
+
+            const selectedQuantity = parseInt(document.getElementById('quantityInput').value) || 1;
+            const furnitureId = currentReservationItem.家具編號 || 'unknown';
+            
+            addDebugLog(`✅ 確認預約: ${furnitureId}, 數量: ${selectedQuantity}, 方式: ${reservationType}`, 'info');
+            
+            // 關閉彈窗
+            closeQuantityModal();
+            document.getElementById('detailModal').style.display = 'none';
+
+            // 根據類型執行對應的預約流程
+            if (reservationType === 'mobile') {
+                executeReservationMobile(furnitureId, selectedQuantity);
+            } else if (reservationType === 'desktop') {
+                executeReservationDesktop(furnitureId, selectedQuantity);
             } else {
-                // 彈出視窗被阻擋，改用 iframe
-                await updateWithHiddenIframe(updateUrl);
+                addDebugLog(`❌ 未知的預約類型: "${reservationType}"`, 'error');
+                showNotification('預約類型錯誤', 'error');
             }
         }
-        
-        updateBtn.innerHTML = '更新完成';
-        addDebugLog('✅ 更新請求已發送', 'success');
-        
-        // 延遲後重新載入資料來驗證更新
-        setTimeout(() => {
-            updateBtn.innerHTML = '驗證更新中';
-            addDebugLog('🔍 驗證更新是否成功...', 'info');
-            loadFurnitureData();
-        }, 2000);
-        
-        // 更新時間顯示
-        const now = new Date();
-        const timeString = now.toLocaleString('zh-TW', {
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-        lastUpdate.textContent = `最後更新：${timeString}`;
-        lastUpdate.style.display = 'inline';
-        
-        showNotification('更新請求已發送！', 'success');
-        
-        // 恢復按鈕
-        setTimeout(() => {
-            updateBtn.disabled = false;
-            updateBtn.innerHTML = originalText;
-        }, 5000);
-        
-    } catch (error) {
-        addDebugLog(`❌ 更新失敗: ${error.message}`, 'error');
-        updateBtn.innerHTML = '更新失敗';
-        showNotification(`更新失敗: ${error.message}`, 'error');
-        
-        setTimeout(() => {
-            updateBtn.disabled = false;
-            updateBtn.innerHTML = originalText;
-        }, 3000);
-    }
-}
 
-// 🔧 行動裝置友善的隱藏 iframe 更新方式
-async function updateWithHiddenIframe(updateUrl) {
-    return new Promise((resolve, reject) => {
-        addDebugLog('📱 使用隱藏 iframe 執行更新（行動裝置版）...', 'info');
-        
-        const iframe = document.createElement('iframe');
-        
-        // 🔧 完全隱藏 iframe，確保不會顯示給用戶
-        iframe.style.display = 'none';
-        iframe.style.visibility = 'hidden';
-        iframe.style.width = '0px';
-        iframe.style.height = '0px';
-        iframe.style.position = 'absolute';
-        iframe.style.left = '-9999px';
-        iframe.style.top = '-9999px';
-        iframe.style.zIndex = '-1000';
-        iframe.style.opacity = '0';
-        iframe.style.pointerEvents = 'none';
-        
-        // 🔧 防止 iframe 獲得焦點
-        iframe.tabIndex = -1;
-        iframe.setAttribute('aria-hidden', 'true');
-        
-        let completed = false;
-        
-        const cleanup = () => {
-            if (iframe.parentNode) {
-                iframe.parentNode.removeChild(iframe);
-                addDebugLog('🧹 iframe 已清理', 'info');
-            }
-        };
-        
-        // 🔧 縮短超時時間，提高回應速度
-        const timeout = setTimeout(() => {
-            if (!completed) {
-                completed = true;
-                addDebugLog('⏰ iframe 更新完成（超時結束）', 'success');
-                cleanup();
-                resolve();
-            }
-        }, 6000); // 從 8 秒縮短到 6 秒
-        
-        iframe.onload = () => {
-            if (!completed) {
-                completed = true;
-                clearTimeout(timeout);
-                addDebugLog('✅ iframe 載入完成', 'success');
-                // 🔧 延遲清理，確保 API 執行完成
+        // 更新資料函數
+        async function updateData() {
+            const updateBtn = document.getElementById('updateBtn');
+            const lastUpdate = document.getElementById('lastUpdate');
+            const originalText = updateBtn.innerHTML;
+            
+            addDebugLog('🔄 開始更新資料...', 'info');
+            
+            try {
+                updateBtn.disabled = true;
+                updateBtn.innerHTML = '更新中...';
+                
+                const timestamp = new Date().getTime();
+                const updateUrl = `${getUpdateApiUrl()}?action=update&_t=${timestamp}`;
+                
+                addDebugLog(`📡 更新 URL: ${updateUrl}`, 'info');
+                
+                const isLineApp = navigator.userAgent.includes('Line/');
+                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                const isInApp = isLineApp || window.liff;
+                
+                addDebugLog(`📱 裝置檢測: LINE=${isLineApp}, Mobile=${isMobile}, InApp=${isInApp}`, 'info');
+                
+                if (isInApp || isMobile) {
+                    addDebugLog('📱 使用行動裝置友善的更新方式...', 'info');
+                    await updateWithHiddenIframe(updateUrl);
+                } else {
+                    addDebugLog('💻 使用桌面版更新方式...', 'info');
+                    const updateWindow = window.open(
+                        updateUrl, 
+                        'updateWindow', 
+                        'width=300,height=200,left=9999,top=9999,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no'
+                    );
+                    
+                    if (updateWindow) {
+                        setTimeout(() => {
+                            try {
+                                updateWindow.close();
+                            } catch (e) {
+                                // 忽略關閉錯誤
+                            }
+                        }, 3000);
+                        await new Promise(resolve => setTimeout(resolve, 4000));
+                    } else {
+                        await updateWithHiddenIframe(updateUrl);
+                    }
+                }
+                
+                updateBtn.innerHTML = '更新完成';
+                addDebugLog('✅ 更新請求已發送', 'success');
+                
                 setTimeout(() => {
-                    cleanup();
-                    resolve();
-                }, 1000);
-            }
-        };
-        
-        iframe.onerror = () => {
-            if (!completed) {
-                completed = true;
-                clearTimeout(timeout);
-                addDebugLog('✅ iframe 載入完成（回應非HTML格式）', 'success');
+                    updateBtn.innerHTML = '驗證更新中';
+                    addDebugLog('🔍 驗證更新是否成功...', 'info');
+                    loadFurnitureData();
+                }, 2000);
+                
+                const now = new Date();
+                const timeString = now.toLocaleString('zh-TW', {
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                lastUpdate.textContent = `最後更新：${timeString}`;
+                lastUpdate.style.display = 'inline';
+                
+                showNotification('更新請求已發送！', 'success');
+                
                 setTimeout(() => {
-                    cleanup();
-                    resolve();
-                }, 1000);
+                    updateBtn.disabled = false;
+                    updateBtn.innerHTML = originalText;
+                }, 5000);
+                
+            } catch (error) {
+                addDebugLog(`❌ 更新失敗: ${error.message}`, 'error');
+                updateBtn.innerHTML = '更新失敗';
+                showNotification(`更新失敗: ${error.message}`, 'error');
+                
+                setTimeout(() => {
+                    updateBtn.disabled = false;
+                    updateBtn.innerHTML = originalText;
+                }, 3000);
             }
-        };
-        
-        // 🔧 安靜地加入 DOM
-        document.body.appendChild(iframe);
-        
-        // 🔧 延遲設定 src，避免立即跳轉
-        setTimeout(() => {
-            if (!completed) {
-                iframe.src = updateUrl;
-                addDebugLog('📡 iframe 請求已發送', 'info');
-            }
-        }, 100);
-    });
-}
+        }
 
-// 🔧 替代方案：使用 img 標籤觸發請求
-async function updateDataWithImage() {
-    const updateBtn = document.getElementById('updateBtn');
-    const lastUpdate = document.getElementById('lastUpdate');
-    const originalText = updateBtn.innerHTML;
-    
-    addDebugLog('🔄 開始更新資料 (img 方式)...', 'info');
-    
-    try {
-        updateBtn.disabled = true;
-        updateBtn.innerHTML = '更新中...';
-        
-        const timestamp = new Date().getTime();
-        const updateUrl = `${getUpdateApiUrl()}?action=update&_t=${timestamp}`;
-        
-        addDebugLog(`📡 img 更新URL: ${updateUrl}`, 'info');
-        
-        // 建立隱藏的 img 元素來觸發請求
-        const img = new Image();
-        
-        const imgPromise = new Promise((resolve, reject) => {
-            const timeout = setTimeout(() => {
-                addDebugLog('⏰ img 請求超時，視為成功', 'warning');
-                resolve();
-            }, 10000);
-            
-            img.onload = () => {
-                clearTimeout(timeout);
-                addDebugLog('✅ img 載入完成（可能出錯但請求已發送）', 'info');
-                resolve();
-            };
-            
-            img.onerror = () => {
-                clearTimeout(timeout);
-                addDebugLog('✅ img 載入錯誤（正常，因為回應是JSON）', 'info');
-                resolve(); // 錯誤是正常的，因為 API 回傳 JSON 不是圖片
-            };
-        });
-        
-        img.src = updateUrl;
-        await imgPromise;
-        
-        updateBtn.innerHTML = '更新完成';
-        addDebugLog('✅ 更新請求已發送 (img)', 'success');
-        
-        // 延遲後重新載入資料
-        setTimeout(() => {
-            updateBtn.innerHTML = '重新載入中';
-            loadFurnitureData();
-        }, 2000);
-        
-        // 更新時間顯示
-        const now = new Date();
-        const timeString = now.toLocaleString('zh-TW', {
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-        lastUpdate.textContent = `最後更新：${timeString}`;
-        lastUpdate.style.display = 'inline';
-        
-        showNotification('更新完成！', 'success');
-        
-        setTimeout(() => {
-            updateBtn.disabled = false;
-            updateBtn.innerHTML = originalText;
-        }, 4000);
-        
-    } catch (error) {
-        addDebugLog(`❌ img 更新失敗: ${error.message}`, 'error');
-        updateBtn.innerHTML = '更新失敗';
-        showNotification(`更新失敗: ${error.message}`, 'error');
-        
-        setTimeout(() => {
-            updateBtn.disabled = false;
-            updateBtn.innerHTML = originalText;
-        }, 3000);
-    }
-}
+        // 行動裝置友善的隱藏 iframe 更新方式
+        async function updateWithHiddenIframe(updateUrl) {
+            return new Promise((resolve, reject) => {
+                addDebugLog('📱 使用隱藏 iframe 執行更新（行動裝置版）...', 'info');
+                
+                const iframe = document.createElement('iframe');
+                
+                iframe.style.display = 'none';
+                iframe.style.visibility = 'hidden';
+                iframe.style.width = '0px';
+                iframe.style.height = '0px';
+                iframe.style.position = 'absolute';
+                iframe.style.left = '-9999px';
+                iframe.style.top = '-9999px';
+                iframe.style.zIndex = '-1000';
+                iframe.style.opacity = '0';
+                iframe.style.pointerEvents = 'none';
+                
+                iframe.tabIndex = -1;
+                iframe.setAttribute('aria-hidden', 'true');
+                
+                let completed = false;
+                
+                const cleanup = () => {
+                    if (iframe.parentNode) {
+                        iframe.parentNode.removeChild(iframe);
+                        addDebugLog('🧹 iframe 已清理', 'info');
+                    }
+                };
+                
+                const timeout = setTimeout(() => {
+                    if (!completed) {
+                        completed = true;
+                        addDebugLog('⏰ iframe 更新完成（超時結束）', 'success');
+                        cleanup();
+                        resolve();
+                    }
+                }, 6000);
+                
+                iframe.onload = () => {
+                    if (!completed) {
+                        completed = true;
+                        clearTimeout(timeout);
+                        addDebugLog('✅ iframe 載入完成', 'success');
+                        setTimeout(() => {
+                            cleanup();
+                            resolve();
+                        }, 1000);
+                    }
+                };
+                
+                iframe.onerror = () => {
+                    if (!completed) {
+                        completed = true;
+                        clearTimeout(timeout);
+                        addDebugLog('✅ iframe 載入完成（回應非HTML格式）', 'success');
+                        setTimeout(() => {
+                            cleanup();
+                            resolve();
+                        }, 1000);
+                    }
+                };
+                
+                document.body.appendChild(iframe);
+                
+                setTimeout(() => {
+                    if (!completed) {
+                        iframe.src = updateUrl;
+                        addDebugLog('📡 iframe 請求已發送', 'info');
+                    }
+                }, 100);
+            });
+        }
 
         // 取得顯示地址
         function getDisplayAddress(item) {
-            // 🔧 強化地址處理
             const warehouse = item.轉移到倉庫;
             const warehouseAddr = item.倉庫地址;
             const actualAddr = item.實際地址;
@@ -1232,7 +1797,6 @@ async function updateDataWithImage() {
 
         // 取得顯示費用
         function getDisplayPrice(item) {
-            // 🔧 強化費用處理 - 確保是字串且有內容
             if (item.費用 != null && item.費用 !== '') {
                 const priceStr = String(item.費用).trim();
                 if (priceStr !== '') {
@@ -1335,16 +1899,20 @@ async function updateDataWithImage() {
             }
 
             container.innerHTML = data.map((item, index) => {
-                // 🔧 確保家具編號存在且有效
                 const furnitureId = item.家具編號 || `item_${index}`;
-                addDebugLog(`🏷️ 第${index + 1}筆資料 - 編號: ${furnitureId}, 名稱: ${item.家具名稱}`, 'info');
+                const quantity = getQuantityDisplay(item);
+                
+                addDebugLog(`🏷️ 第${index + 1}筆資料 - 編號: ${furnitureId}, 名稱: ${item.家具名稱}, 數量: ${quantity}`, 'info');
                 
                 return `
                 <div class="furniture-card">
                     <div class="card-content">
                         <img src="${item.家具圖片1 || 'https://via.placeholder.com/130x130?text=暫無圖片'}" alt="${item.家具名稱}" class="furniture-image">
                         <div class="furniture-info">
-                            <div class="furniture-name">${item.家具名稱}</div>
+                            <div class="furniture-name">
+                                ${item.家具名稱}
+                                <span class="quantity-badge">${quantity}個</span>
+                            </div>
                             <div class="furniture-details">
                                 <div class="detail-item">
                                     <span class="detail-label">編號:</span> ${furnitureId}
@@ -1366,14 +1934,12 @@ async function updateDataWithImage() {
             addDebugLog('✅ 家具列表渲染完成', 'success');
         }
 
-        // 顯示詳細資料
+        // 💡 改良版：顯示詳細資料（新的預約按鈕配置）
         function showDetail(furnitureId) {
             addDebugLog(`🔍 顯示家具詳細資料: ${furnitureId}`, 'info');
             
-            // 🔧 更強健的查找邏輯
             let item = furnitureData.find(f => f.家具編號 === furnitureId);
             
-            // 如果找不到，嘗試用索引查找
             if (!item && furnitureId.startsWith('item_')) {
                 const index = parseInt(furnitureId.split('_')[1]);
                 if (index >= 0 && index < furnitureData.length) {
@@ -1392,27 +1958,19 @@ async function updateDataWithImage() {
 
             addDebugLog(`✅ 找到家具: ${item.家具名稱}`, 'success');
 
-            // 🔧 加強彈窗元素檢查
             const modal = document.getElementById('detailModal');
             const modalTitle = document.getElementById('modalTitle');
             const modalBody = document.getElementById('modalBody');
 
-            if (!modal) {
-                addDebugLog(`❌ 找不到 modal 元素`, 'error');
-                return;
-            }
-            if (!modalTitle) {
-                addDebugLog(`❌ 找不到 modalTitle 元素`, 'error');
-                return;
-            }
-            if (!modalBody) {
-                addDebugLog(`❌ 找不到 modalBody 元素`, 'error');
+            if (!modal || !modalTitle || !modalBody) {
+                addDebugLog(`❌ 找不到彈窗元素`, 'error');
                 return;
             }
 
             addDebugLog(`✅ 所有彈窗元素都存在`, 'success');
 
             try {
+                const quantity = getQuantityDisplay(item);
                 modalTitle.textContent = item.家具名稱;
                 addDebugLog(`✅ 標題設定完成: ${item.家具名稱}`, 'success');
 
@@ -1435,6 +1993,7 @@ async function updateDataWithImage() {
                             <div class="detail-row"><span>購買年分</span><span>${item.購買年分}</span></div>
                             <div class="detail-row"><span>新舊程度</span><span>${item.新舊程度}</span></div>
                             <div class="detail-row"><span>費用</span><span>${getDisplayPrice(item)}</span></div>
+                            <div class="detail-row"><span>可用數量</span><span><span class="detail-quantity-badge">${quantity}個</span></span></div>
                         </div>
                         
                         <div class="detail-group">
@@ -1446,13 +2005,15 @@ async function updateDataWithImage() {
                         </div>
                     </div>
                     
-                    <div class="reserve-buttons">
-                        <button class="reserve-btn mobile-btn" onclick="reserveFurnitureMobile('${item.家具編號 || furnitureId}')">
-                            📱 手機版預約
+                    <!-- 💡 新的預約區域設計 -->
+                    <div class="reserve-section">
+                        <h4>🎯 預約此家具</h4>
+                        <button class="main-reserve-btn" onclick="showQuantityModal('${item.家具編號 || furnitureId}')">
+                            📋 我要預約
                         </button>
-                        <button class="reserve-btn desktop-btn" onclick="reserveFurnitureDesktop('${item.家具編號 || furnitureId}')">
-                            💻 電腦版預約
-                        </button>
+                        <div style="font-size: 13px; color: #666; text-align: center; line-height: 1.4;">
+                            點擊後可選擇數量及預約方式
+                        </div>
                     </div>
                     
                     <div style="margin-top: 20px; padding: 15px; background: #f8f6f3; border-radius: 8px; font-size: 14px; color: #666; text-align: center; border-left: 4px solid #d4a574;">
@@ -1476,18 +2037,14 @@ async function updateDataWithImage() {
                 modalBody.innerHTML = modalContent;
                 addDebugLog(`✅ 彈窗內容設定完成`, 'success');
 
-                // 🔧 確保彈窗顯示
                 addDebugLog(`🔍 準備顯示彈窗...`, 'info');
-                addDebugLog(`🔍 當前 modal.style.display: ${modal.style.display}`, 'info');
                 
                 modal.style.display = 'block';
                 modal.style.visibility = 'visible';
                 modal.style.opacity = '1';
                 
-                addDebugLog(`🔍 設定後 modal.style.display: ${modal.style.display}`, 'info');
                 addDebugLog('✅ 詳細資料彈窗已顯示', 'success');
 
-                // 🔧 額外檢查：確保彈窗真的可見
                 setTimeout(() => {
                     const computedStyle = window.getComputedStyle(modal);
                     addDebugLog(`🔍 computed display: ${computedStyle.display}`, 'info');
@@ -1501,37 +2058,285 @@ async function updateDataWithImage() {
             }
         }
 
-        // 手機版預約 (LIFF)
-        function reserveFurnitureMobile(furnitureId) {
-            addDebugLog(`📱 手機版預約: ${furnitureId}`, 'info');
+        // 💡 強化版執行手機版預約 - 修正彈窗層級問題
+        function executeReservationMobile(furnitureId, quantity) {
+            addDebugLog(`📱 執行手機版預約: ${furnitureId}, 數量: ${quantity}`, 'info');
             
-            const message = `§預約_${furnitureId}`;
+            const message = `§預約_${furnitureId}_數量${quantity}`;
+            addDebugLog(`📝 準備發送的訊息: ${message}`, 'info');
             
-            if (liff.isLoggedIn()) {
-                liff.sendMessages([{
-                    type: 'text',
-                    text: message
-                }]).then(() => {
-                    addDebugLog('✅ LIFF 預約訊息已送出', 'success');
-                    showNotification('預約訊息已送出！', 'success');
-                    document.getElementById('detailModal').style.display = 'none';
-                }).catch((err) => {
-                    addDebugLog(`❌ LIFF 發送失敗: ${err}`, 'error');
-                    showNotification('發送失敗，請稍後再試', 'error');
+            // 🔧 立即檢查 LIFF 狀態（在彈窗關閉前）
+            let liffStatus = {
+                sdkLoaded: typeof liff !== 'undefined',
+                initialized: false,
+                inClient: false,
+                loggedIn: false
+            };
+            
+            if (liffStatus.sdkLoaded) {
+                try {
+                    liffStatus.initialized = liffInitialized;
+                    liffStatus.inClient = liff.isInClient();
+                    liffStatus.loggedIn = liff.isLoggedIn();
+                } catch (error) {
+                    addDebugLog(`❌ LIFF 狀態檢查錯誤: ${error.message}`, 'error');
+                }
+            }
+            
+            addDebugLog(`🔍 當前 LIFF 狀態:`, 'info');
+            addDebugLog(`   - SDK 載入: ${liffStatus.sdkLoaded}`, 'info');
+            addDebugLog(`   - 已初始化: ${liffStatus.initialized}`, 'info');
+            addDebugLog(`   - 在客戶端: ${liffStatus.inClient}`, 'info');
+            addDebugLog(`   - 已登入: ${liffStatus.loggedIn}`, 'info');
+            
+            // 🔧 檢查用戶代理字串
+            const userAgent = navigator.userAgent;
+            const isLineApp = userAgent.includes('Line/');
+            addDebugLog(`🔍 User Agent 檢查: LINE App = ${isLineApp}`, 'info');
+            
+            // 🔧 如果所有條件都滿足，直接發送訊息
+            if (liffStatus.sdkLoaded && liffStatus.initialized && liffStatus.inClient && liffStatus.loggedIn) {
+                addDebugLog('✅ LIFF 條件完全滿足，準備發送訊息...', 'success');
+                
+                showNotification('正在發送預約訊息到 LINE...', 'loading');
+                
+                // 🔧 使用 setTimeout 確保在主執行緒中執行
+                setTimeout(() => {
+                    liff.sendMessages([{
+                        type: 'text',
+                        text: message
+                    }]).then(() => {
+                        addDebugLog('✅ LIFF 訊息發送成功！', 'success');
+                        showNotification(`✅ 預約訊息已發送到 LINE 對話框！\n數量：${quantity} 個`, 'success');
+                        
+                        // 🔧 可選：發送成功後關閉視窗
+                        // setTimeout(() => {
+                        //     if (liff.isInClient()) {
+                        //         liff.closeWindow();
+                        //     }
+                        // }, 2000);
+                        
+                    }).catch((error) => {
+                        addDebugLog(`❌ LIFF 訊息發送失敗:`, 'error');
+                        addDebugLog(`   - 錯誤名稱: ${error.name}`, 'error');
+                        addDebugLog(`   - 錯誤訊息: ${error.message}`, 'error');
+                        addDebugLog(`   - 完整錯誤: ${JSON.stringify(error)}`, 'error');
+                        
+                        showNotification('LIFF 發送失敗，改用剪貼簿方式', 'error');
+                        setTimeout(() => copyToClipboard(message, quantity), 1000);
+                    });
+                }, 100);
+                
+            } else if (liffStatus.sdkLoaded && liffStatus.inClient && !liffStatus.loggedIn) {
+                // 🔧 在 LINE 客戶端但未登入
+                addDebugLog('⚠️ 在 LINE 客戶端但未登入，嘗試重新初始化...', 'warning');
+                
+                showNotification('正在重新連接 LINE...', 'loading');
+                
+                // 嘗試重新初始化和登入
+                setTimeout(async () => {
+                    try {
+                        await liff.login();
+                        addDebugLog('✅ 重新登入成功，重新嘗試發送...', 'success');
+                        
+                        // 重新嘗試發送
+                        executeReservationMobile(furnitureId, quantity);
+                        
+                    } catch (loginError) {
+                        addDebugLog(`❌ 重新登入失敗: ${loginError.message}`, 'error');
+                        showNotification('登入失敗，使用剪貼簿方式', 'error');
+                        copyToClipboard(message, quantity);
+                    }
+                }, 500);
+                
+            } else if (isLineApp && !liffStatus.inClient) {
+                // 🔧 是 LINE App 但 LIFF 檢測失敗 - 可能是彈窗問題
+                addDebugLog('🔧 是 LINE App 但 LIFF 檢測失敗，嘗試重新初始化...', 'warning');
+                
+                showNotification('正在重新檢查 LINE 環境...', 'loading');
+                
+                // 重新初始化 LIFF
+                setTimeout(async () => {
+                    try {
+                        await initializeLiff();
+                        
+                        if (liff.isInClient() && liff.isLoggedIn()) {
+                            addDebugLog('✅ 重新初始化成功，重新嘗試發送...', 'success');
+                            executeReservationMobile(furnitureId, quantity);
+                        } else {
+                            addDebugLog('❌ 重新初始化後仍無法使用 LIFF', 'error');
+                            showNotification('LIFF 重新初始化失敗，使用剪貼簿方式', 'error');
+                            copyToClipboard(message, quantity);
+                        }
+                    } catch (reinitError) {
+                        addDebugLog(`❌ 重新初始化失敗: ${reinitError.message}`, 'error');
+                        showNotification('重新初始化失敗，使用剪貼簿方式', 'error');
+                        copyToClipboard(message, quantity);
+                    }
+                }, 500);
+                
+            } else {
+                // 🔧 其他情況使用剪貼簿
+                addDebugLog('❌ 不滿足 LIFF 發送條件，使用剪貼簿方式', 'warning');
+                
+                if (!isLineApp) {
+                    showNotification('請在 LINE 應用程式中開啟此頁面', 'info');
+                } else if (!liffStatus.sdkLoaded) {
+                    showNotification('LIFF SDK 未載入，使用剪貼簿方式', 'info');
+                } else {
+                    showNotification('LIFF 環境異常，使用剪貼簿方式', 'info');
+                }
+                
+                copyToClipboard(message, quantity);
+            }
+        }
+
+        // 💡 新增：強制重新初始化 LIFF 的函數
+        async function forceReinitializeLiff() {
+            addDebugLog('🔄 強制重新初始化 LIFF...', 'info');
+            
+            try {
+                // 重置狀態
+                liffInitialized = false;
+                liffReady = false;
+                
+                // 重新初始化
+                await initializeLiff();
+                
+                return liff.isInClient() && liff.isLoggedIn();
+            } catch (error) {
+                addDebugLog(`❌ 強制重新初始化失敗: ${error.message}`, 'error');
+                return false;
+            }
+        }
+
+        // 💡 強化版複製到剪貼簿函數
+        function copyToClipboard(message, quantity) {
+            addDebugLog('📋 執行剪貼簿複製...', 'info');
+            
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(message).then(() => {
+                    addDebugLog('✅ 訊息已複製到剪貼簿', 'success');
+                    showNotification(`📋 預約訊息已複製到剪貼簿\n數量：${quantity} 個\n\n請到 LINE 對話框貼上發送`, 'info');
+                }).catch((error) => {
+                    addDebugLog(`❌ 剪貼簿複製失敗: ${error.message}`, 'error');
+                    showManualCopyNotification(message, quantity);
                 });
             } else {
-                addDebugLog('⚠️ LIFF 未登入，使用剪貼簿方式', 'warning');
-                navigator.clipboard.writeText(message).then(() => {
-                    showNotification('預約訊息已複製到剪貼簿，請到LINE貼上發送', 'info');
-                }).catch(() => {
-                    showNotification(`請複製此訊息到LINE發送：${message}`, 'info');
+                addDebugLog('❌ 瀏覽器不支援剪貼簿 API', 'error');
+                showManualCopyNotification(message, quantity);
+            }
+        }
+
+        // 💡 顯示手動複製通知
+        function showManualCopyNotification(message, quantity) {
+            // 移除現有通知
+            const existingNotification = document.querySelector('.notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+
+            const notification = document.createElement('div');
+            notification.className = 'notification info show';
+            notification.style.maxWidth = '350px';
+            notification.style.fontSize = '14px';
+            notification.style.lineHeight = '1.4';
+            
+            notification.innerHTML = `
+                <div style="margin-bottom: 10px;">
+                    <strong>📱 手動複製預約訊息</strong>
+                </div>
+                <div style="background: rgba(255,255,255,0.2); padding: 8px; border-radius: 6px; margin: 8px 0; font-family: monospace; word-break: break-all;">
+                    ${message}
+                </div>
+                <div style="font-size: 12px; opacity: 0.9;">
+                    請複製上方訊息到 LINE 發送<br>
+                    數量：${quantity} 個
+                </div>
+                <span class="notification-close" onclick="this.parentElement.remove()" style="position: absolute; top: 8px; right: 8px;">×</span>
+            `;
+
+            document.body.appendChild(notification);
+            
+            // 10秒後自動關閉
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.classList.remove('show');
+                    setTimeout(() => notification.remove(), 300);
+                }
+            }, 10000);
+        }
+
+        // 💡 新增：LIFF 狀態檢查函數（供除錯使用）
+        function checkLiffStatus() {
+            if (!isDebugMode) return;
+            
+            addDebugLog('🔍 手動檢查 LIFF 狀態', 'info');
+            addDebugLog(`   - typeof liff: ${typeof liff}`, 'info');
+            addDebugLog(`   - liffInitialized: ${liffInitialized}`, 'info');
+            addDebugLog(`   - liffReady: ${liffReady}`, 'info');
+            
+            if (typeof liff !== 'undefined') {
+                try {
+                    addDebugLog(`   - liff.isInClient(): ${liff.isInClient()}`, 'info');
+                    addDebugLog(`   - liff.isLoggedIn(): ${liff.isLoggedIn()}`, 'info');
+                    addDebugLog(`   - liff.getOS(): ${liff.getOS()}`, 'info');
+                    addDebugLog(`   - liff.getVersion(): ${liff.getVersion()}`, 'info');
+                    
+                    if (liff.isInClient()) {
+                        const context = liff.getContext();
+                        addDebugLog(`   - context.type: ${context?.type}`, 'info');
+                        addDebugLog(`   - context.viewType: ${context?.viewType}`, 'info');
+                    }
+                } catch (error) {
+                    addDebugLog(`❌ LIFF 狀態檢查錯誤: ${error.message}`, 'error');
+                }
+            }
+        }
+
+        // 💡 新增除錯按鈕功能 - 強化版
+        function addDebugButton() {
+            if (!isDebugMode) return;
+            
+            const debugBtn = document.querySelector('.toggle-debug');
+            if (debugBtn) {
+                debugBtn.onclick = function() {
+                    toggleDebugPanel();
+                    checkLiffStatus();
+                };
+                
+                // 新增多個測試按鈕
+                const buttonConfigs = [
+                    { text: '🧪 測試 LIFF', color: '#28a745', left: '120px', action: () => executeReservationMobile('TEST001', 1) },
+                    { text: '🔄 重新初始化', color: '#ffc107', left: '220px', action: forceReinitializeLiff },
+                    { text: '🔍 檢查狀態', color: '#17a2b8', left: '340px', action: checkLiffStatus }
+                ];
+                
+                buttonConfigs.forEach(config => {
+                    const btn = document.createElement('button');
+                    btn.style.cssText = `
+                        position: fixed;
+                        top: 20px;
+                        left: ${config.left};
+                        z-index: 999;
+                        background: ${config.color};
+                        color: white;
+                        border: none;
+                        padding: 8px 12px;
+                        border-radius: 6px;
+                        cursor: pointer;
+                        font-size: 11px;
+                    `;
+                    btn.textContent = config.text;
+                    btn.onclick = config.action;
+                    document.body.appendChild(btn);
                 });
             }
         }
 
-        // 電腦版預約 (Webhook)
-        async function reserveFurnitureDesktop(furnitureId) {
-            addDebugLog(`💻 電腦版預約: ${furnitureId}`, 'info');
+        // 💡 執行電腦版預約
+        async function executeReservationDesktop(furnitureId, quantity) {
+            addDebugLog(`💻 執行電腦版預約: ${furnitureId}, 數量: ${quantity}`, 'info');
             
             showNotification('處理中，請稍候...', 'loading');
             
@@ -1539,6 +2344,7 @@ async function updateDataWithImage() {
                 const webhookData = {
                     action: "預約",
                     furnitureId: furnitureId,
+                    quantity: quantity,
                     lineUserId: userLineId,
                     deviceType: "desktop",
                     timestamp: new Date().toISOString()
@@ -1546,27 +2352,46 @@ async function updateDataWithImage() {
                 
                 addDebugLog(`📡 發送 Webhook 資料: ${JSON.stringify(webhookData)}`, 'info');
                 
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
+                
                 const response = await fetch('https://hook.us2.make.com/w1rjzy2ba1fa4354n6e31a2ju7wn294v', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Accept': 'application/json'
                     },
-                    body: JSON.stringify(webhookData)
+                    body: JSON.stringify(webhookData),
+                    signal: controller.signal
                 });
 
-                addDebugLog(`📊 Webhook 回應: ${response.status}`, response.ok ? 'success' : 'error');
+                clearTimeout(timeoutId);
+                
+                addDebugLog(`📊 Webhook 回應: ${response.status} ${response.statusText}`, response.ok ? 'success' : 'error');
+                
+                let responseText = '';
+                try {
+                    responseText = await response.text();
+                    addDebugLog(`📋 Webhook 回應內容: ${responseText}`, 'info');
+                } catch (textError) {
+                    addDebugLog(`❌ 無法讀取回應內容: ${textError.message}`, 'warning');
+                }
 
                 if (response.ok) {
-                    const result = await response.text();
-                    addDebugLog(`📋 Webhook 結果: ${result}`, 'success');
-                    showNotification(result || '預約成功！我們會盡快與您聯絡', 'success');
-                    document.getElementById('detailModal').style.display = 'none';
+                    addDebugLog(`✅ Webhook 成功發送`, 'success');
+                    showNotification(`預約成功！數量：${quantity} 個。我們會盡快與您聯絡`, 'success');
                 } else {
-                    throw new Error('伺服器回應錯誤');
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
+                
             } catch (error) {
                 addDebugLog(`❌ Webhook 發送失敗: ${error.message}`, 'error');
-                showNotification('預約失敗，請稍後再試或聯絡客服', 'error');
+                
+                if (error.name === 'AbortError') {
+                    showNotification('預約請求超時，請稍後再試', 'error');
+                } else {
+                    showNotification(`預約失敗: ${error.message}。請稍後再試或聯絡客服`, 'error');
+                }
             }
         }
 
@@ -1605,19 +2430,40 @@ async function updateDataWithImage() {
             document.getElementById('detailModal').style.display = 'none';
         });
 
+        // 點擊外部關閉彈窗
         window.addEventListener('click', function(event) {
-            const modal = document.getElementById('detailModal');
-            if (event.target === modal) {
-                modal.style.display = 'none';
+            const detailModal = document.getElementById('detailModal');
+            const quantityModal = document.getElementById('quantityModal');
+            
+            if (event.target === detailModal) {
+                detailModal.style.display = 'none';
+            }
+            
+            if (event.target === quantityModal) {
+                cancelQuantityReservation();
             }
         });
 
-        // 🔒 初始載入（含除錯模式初始化）
+        // 數量輸入框事件監聽器
+        document.addEventListener('DOMContentLoaded', function() {
+            const quantityInput = document.getElementById('quantityInput');
+            if (quantityInput) {
+                quantityInput.addEventListener('input', function() {
+                    updateQuantityButtons();
+                });
+            }
+        });
+
+        // 初始載入（含除錯模式初始化）
         window.addEventListener('DOMContentLoaded', function() {
             addDebugLog('🎬 頁面載入完成，開始初始化', 'info');
             
-            // 初始化除錯模式
             initializeDebugMode();
+            
+            // 🔧 在除錯模式下新增測試按鈕
+            if (isDebugMode) {
+                setTimeout(addDebugButton, 1000);
+            }
             
             loadFurnitureData();
         });
